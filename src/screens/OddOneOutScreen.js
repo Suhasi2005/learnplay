@@ -19,7 +19,7 @@ export default function OddOneOutScreen({ route, navigation }) {
   const startStars = route.params?.startStars ?? 0;
   const GAME_ID = route.params?.topicId ?? 'sk-ma-colors';
 
-  const { speak } = useSound();
+  const { speak, playSuccess, playWrong } = useSound();
   const [index, setIndex] = useState(startIndex);
   const [stars, setStars] = useState(startStars);
   const [streak, setStreak] = useState(0);
@@ -77,6 +77,7 @@ export default function OddOneOutScreen({ route, navigation }) {
       triggerPop();
       confettiRef.current?.start();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      playSuccess();
       speak('Yes! You found it!', { rate: 0.95, pitch: 1.15 });
       saveProgress(GAME_ID, index + 1, newStars);
 
@@ -102,6 +103,7 @@ export default function OddOneOutScreen({ route, navigation }) {
       setStreak(0);
       triggerShake();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      playWrong();
       speak('Try again!', { rate: 0.95, pitch: 1.15 });
       wrongTimeout.current = setTimeout(() => {
         if (isMounted.current) setWrongTileId(null);
