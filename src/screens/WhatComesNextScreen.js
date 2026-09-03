@@ -20,7 +20,7 @@ export default function WhatComesNextScreen({ route, navigation }) {
   const startStars = route.params?.startStars ?? 0;
   const GAME_ID = route.params?.topicId ?? 'g1-ma-patterns';
 
-  const { speak } = useSound();
+  const { speak, playSuccess, playWrong } = useSound();
   const [index, setIndex] = useState(startIndex);
   const [stars, setStars] = useState(startStars);
   const [streak, setStreak] = useState(0);
@@ -93,6 +93,7 @@ export default function WhatComesNextScreen({ route, navigation }) {
       triggerPop();
       confettiRef.current?.start();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      playSuccess();
       speak('Yes! That comes next!', { rate: 0.95, pitch: 1.15 });
       saveProgress(GAME_ID, index + 1, newStars);
 
@@ -119,6 +120,7 @@ export default function WhatComesNextScreen({ route, navigation }) {
       setWrongAttempts((n) => n + 1);
       triggerShake();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      playWrong();
       speak('Try again!', { rate: 0.95, pitch: 1.15 });
       wrongTimeout.current = setTimeout(() => {
         if (isMounted.current) setWrongOption(null);
