@@ -6,7 +6,7 @@ import { cardPalette, colors, fonts, radius, spacing } from '../theme';
 
 const SUBJECTS = [
   { id: 'english', label: 'English', emoji: '🔤', available: true },
-  { id: 'math', label: 'Math', emoji: '🔢', available: false },
+  { id: 'math', label: 'Math', emoji: '🔢', available: true },
   { id: 'colors', label: 'Colors', emoji: '🎨', available: false },
 ];
 
