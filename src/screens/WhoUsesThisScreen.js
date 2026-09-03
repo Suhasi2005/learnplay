@@ -6,6 +6,7 @@ import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import BackButton from '../components/BackButton';
 import BouncyButton from '../components/BouncyButton';
+import Mascot from '../components/Mascot';
 import StreakBadge from '../components/StreakBadge';
 import { useSound } from '../context/SoundContext';
 import { TOTAL_ROUNDS, buildRound } from '../helpersData';
@@ -152,6 +153,7 @@ export default function WhoUsesThisScreen({ route, navigation }) {
 
       {showCelebration && (
         <View style={styles.celebrationOverlay} pointerEvents="none">
+          <Mascot mood="cheer" size={78} />
           <Animated.Text style={[styles.celebrationEmoji, { transform: [{ scale: popScale }] }]}>🎉</Animated.Text>
           <Text style={styles.celebrationText}>Great job!</Text>
         </View>
@@ -170,14 +172,14 @@ const styles = StyleSheet.create({
   dotActive: { backgroundColor: colors.sunDeep, width: 10, height: 10, borderRadius: 5 },
   toolBox: {
     marginTop: spacing.md, backgroundColor: colors.white, borderRadius: radius.lg, padding: spacing.lg,
-    shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 3,
+    shadowColor: colors.ink, shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 3,
   },
   toolEmoji: { fontSize: 70 },
   prompt: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.ink, marginTop: spacing.sm, marginBottom: spacing.lg },
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.md, maxWidth: 340 },
   option: {
     width: 130, height: 100, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
+    shadowColor: colors.ink, shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   optionEmoji: { fontSize: 34 },
   optionLabel: { fontFamily: fonts.bodyBold, fontSize: 12, color: colors.ink, marginTop: 2, textAlign: 'center' },
