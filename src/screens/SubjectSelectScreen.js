@@ -1,3 +1,4 @@
+import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import BackButton from '../components/BackButton';
 import BouncyButton from '../components/BouncyButton';
@@ -14,6 +15,7 @@ export default function SubjectSelectScreen({ route, navigation }) {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="dark" />
       <BackButton onPress={() => navigation.goBack()} />
       <Text style={styles.eyebrow}>{grade} · Step 2</Text>
       <Text style={styles.title}>What do you want to learn today?</Text>
@@ -27,7 +29,7 @@ export default function SubjectSelectScreen({ route, navigation }) {
               disabled={!subject.available}
               style={[
                 styles.card,
-                { backgroundColor: subject.available ? palette.bg : '#E4DED6' },
+                { backgroundColor: subject.available ? palette.bg : colors.disabled },
               ]}
               onPress={() => navigation.navigate('TopicSelect', { grade, subject: subject.label })}
             >
