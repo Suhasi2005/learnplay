@@ -1,26 +1,38 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import * as Speech from 'expo-speech';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text } from 'react-native';
+import ConfettiCannon from 'react-native-confetti-cannon';
 import BouncyButton from '../components/BouncyButton';
+import { useSound } from '../context/SoundContext';
 import { ALPHABET } from '../gameData';
+import { clearProgress } from '../storage';
 import { colors, fonts, radius, spacing } from '../theme';
 
 export default function CompletionScreen({ route, navigation }) {
-  const { stars } = route.params;
+  const stars = route.params?.stars ?? 0;
+  const { speak } = useSound();
   const spin = useRef(new Animated.Value(0)).current;
+  const spinAnim = useRef(null);
 
   useEffect(() => {
-    Speech.speak("You did it! You learned the whole alphabet!", { rate: 0.95, pitch: 1.15 });
-    Animated.loop(
+    clearProgress();
+    speak("You did it! You learned the whole alphabet!", { rate: 0.95, pitch: 1.15 });
+    spinAnim.current = Animated.loop(
       Animated.timing(spin, { toValue: 1, duration: 3000, useNativeDriver: true }),
-    ).start();
+    );
+    spinAnim.current.start();
+    return () => spinAnim.current?.stop();
   }, []);
 
   const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
 
   return (
     <LinearGradient colors={[colors.sun, colors.coral]} style={styles.container}>
+      <StatusBar style="light" />
+      <ConfettiCannon count={120} origin={{ x: 0, y: 0 }} fadeOut fallSpeed={3200} />
+      <ConfettiCannon count={120} origin={{ x: 400, y: 0 }} fadeOut fallSpeed={3200} />
+
       <Animated.Text style={[styles.trophy, { transform: [{ rotate }] }]}>🏆</Animated.Text>
       <Text style={styles.title}>You did it!</Text>
       <Text style={styles.subtitle}>You learned all {ALPHABET.length} letters!</Text>
