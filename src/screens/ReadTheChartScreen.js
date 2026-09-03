@@ -6,6 +6,7 @@ import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import BackButton from '../components/BackButton';
 import BouncyButton from '../components/BouncyButton';
+import Mascot from '../components/Mascot';
 import StreakBadge from '../components/StreakBadge';
 import { useSound } from '../context/SoundContext';
 import { TOTAL_ROUNDS, buildRound } from '../dataHandlingData';
@@ -154,6 +155,7 @@ export default function ReadTheChartScreen({ route, navigation }) {
 
       {showCelebration && (
         <View style={styles.celebrationOverlay} pointerEvents="none">
+          <Mascot mood="cheer" size={78} />
           <Animated.Text style={[styles.celebrationEmoji, { transform: [{ scale: popScale }] }]}>📊</Animated.Text>
           <Text style={styles.celebrationText}>{round.correctLabel}!</Text>
         </View>
