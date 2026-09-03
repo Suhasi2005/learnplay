@@ -13,6 +13,8 @@ export const colors = {
   ink: '#3A2E2E',
   muted: '#8C7B7B',
   white: '#FFFFFF',
+  border: '#E4DED6',
+  disabled: '#E4DED6',
 };
 
 // A rotating palette so choice cards feel varied and playful, not uniform.
