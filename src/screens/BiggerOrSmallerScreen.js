@@ -6,6 +6,7 @@ import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import BackButton from '../components/BackButton';
 import BouncyButton from '../components/BouncyButton';
+import Mascot from '../components/Mascot';
 import StreakBadge from '../components/StreakBadge';
 import { useSound } from '../context/SoundContext';
 import { TOTAL_ROUNDS, buildRound } from '../measurementData';
@@ -158,6 +159,7 @@ export default function BiggerOrSmallerScreen({ route, navigation }) {
 
       {showCelebration && (
         <View style={styles.celebrationOverlay} pointerEvents="none">
+          <Mascot mood="cheer" size={78} />
           <Animated.Text style={[styles.celebrationEmoji, { transform: [{ scale: popScale }] }]}>{round.emoji}</Animated.Text>
           <Text style={styles.celebrationText}>Great eye!</Text>
         </View>
@@ -186,7 +188,7 @@ const styles = StyleSheet.create({
   compareBox: {
     width: 140, height: 160, borderRadius: radius.lg, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center',
     borderWidth: 2, borderColor: colors.border,
-    shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
+    shadowColor: colors.ink, shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   compareEmoji: { textAlign: 'center' },
   starsRow: { marginTop: spacing.xl },
