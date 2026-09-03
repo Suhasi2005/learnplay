@@ -62,7 +62,7 @@ This app went through actual bug-fixing passes, not just feature passes:
 - Full codebase re-linted (`oxlint`) after every round of new games — zero warnings, every time.
 
 ## Tech Stack
-React Native, Expo, React Navigation, `expo-speech`, `expo-haptics`, `expo-linear-gradient`, `react-native-confetti-cannon`, `@react-native-async-storage/async-storage`, Google Fonts (Fredoka + Baloo 2) via `@expo-google-fonts`
+React Native, Expo, React Navigation, `expo-speech`, `expo-audio`, `expo-haptics`, `expo-linear-gradient`, `react-native-confetti-cannon`, `@react-native-async-storage/async-storage`, Google Fonts (Fredoka + Baloo 2) via `@expo-google-fonts`
 
 ## Run
 ```bash
@@ -83,8 +83,9 @@ src/
                                     #  measurementData, oddOneOutData, moneyData, timeData, multiplicationData,
                                     #  dataHandlingData, numberLineData, helpersData, bodyPartsData, livingData,
                                     #  seasonsData, animalSoundsData)
+  soundEffects.js                  # the three bundled chimes, as reusable expo-audio players
   context/
-    SoundContext.js                # app-wide mute toggle + a speak() that respects it
+    SoundContext.js                # app-wide mute toggle + speak()/playSuccess()/playWrong()/playComplete()
   components/
     BouncyButton.js                 # shared tap animation used by every button in the app
     BackButton.js / StreakBadge.js / FadeInCard.js / ClockFace.js
@@ -93,7 +94,16 @@ src/
     GradeSelectScreen.js / SubjectSelectScreen.js / TopicSelectScreen.js   # all derived from curriculum.js
     [19 game screens, one per game above]
     CompletionScreen.js                                                    # generalized via route params
+assets/
+  sounds/                          # success.wav / wrong.wav / complete.wav — generated, see below
 ```
 
+## Sound effects
+Every game now plays a short chime on a right answer, a wrong answer, and a finished topic, layered under the existing spoken feedback. The blocker here was never the code — it was that shipping audio means shipping someone's licensed work, and a kids' app is a bad place to be vague about rights.
+
+So the three clips are generated rather than sourced: a small Node script writes raw 16-bit PCM samples and a RIFF header directly to `.wav`, so `success.wav` is a two-note rising chime, `wrong.wav` a soft descending tone, and `complete.wav` a three-note fanfare. Together they're ~43KB and there is no attribution or licence question to answer, because nothing was copied from anywhere.
+
+They route through the same `SoundContext` as speech, so the existing mute toggle silences all of it with one switch — a parent turning sound off gets an actually-silent app, not a quieter one. Playback failures are swallowed on purpose: a missed chime is cosmetic, and it should never take a game down with it.
+
 ## Roadmap
-19 of 60 researched topics are playable. Deliberately not built yet: real bundled sound effects distinct from the spoken-word feedback (needs licensed or self-recorded audio, not something to fake); any drag-and-drop interaction (the one style in this app that can't be verified correct without a physical device — everything shipped so far uses tap input, which is safe to reason about from code alone). Next batch of topics should keep prioritizing new *kinds* of interaction over repeating the mechanics already proven here.
+19 of 60 researched topics are playable. Still deliberately not built: any drag-and-drop interaction — the one style in this app that can't be verified correct without a physical device to test on, where everything shipped so far uses tap input, which is safe to reason about from code alone. Next batch of topics should keep prioritizing new *kinds* of interaction over repeating the mechanics already proven here.
