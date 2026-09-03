@@ -26,6 +26,10 @@ export const cardPalette = [
   { bg: colors.grape, deep: colors.grapeDeep },
 ];
 
+// A soft, warm backdrop for list/selection screens — subtle enough not to
+// fight the bright cards on top, but adds depth a flat fill can't.
+export const bgGradient = ['#FFF8EC', '#FFEBD2'];
+
 export const spacing = { xs: 6, sm: 12, md: 20, lg: 28, xl: 40 };
 export const radius = { sm: 12, md: 20, lg: 28, pill: 999 };
 
