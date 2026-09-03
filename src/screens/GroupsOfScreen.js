@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     width: 68, height: 68, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center',
     shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
-  optionText: { fontFamily: fonts.displayBold, fontSize: 26, color: colors.white },
+  optionText: { fontFamily: fonts.displayBold, fontSize: 26, color: colors.ink },
   starsRow: { marginTop: spacing.lg },
   starsText: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.sunDeep },
   celebrationOverlay: {
