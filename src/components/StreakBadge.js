@@ -29,5 +29,7 @@ const styles = StyleSheet.create({
     borderWidth: 2, borderColor: colors.white,
     shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 3,
   },
-  text: { fontFamily: fonts.bodyBold, color: colors.white, fontSize: 13 },
+  // White on coral measures ~2.7:1 (fails WCAG AA even for large text);
+  // ink on coral measures ~4.8:1 (passes normal-text AA).
+  text: { fontFamily: fonts.bodyBold, color: colors.ink, fontSize: 13 },
 });
