@@ -1,67 +1,133 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import BackButton from '../components/BackButton';
-import BouncyButton from '../components/BouncyButton';
 import FadeInCard from '../components/FadeInCard';
-import { isSubjectAvailable } from '../curriculum';
-import { bgGradient, cardPalette, colors, fonts, radius, spacing } from '../theme';
+import { MascotBadge } from '../components/Mascot';
+import ProgressRing, { RingLabel } from '../components/ProgressRing';
+import SceneBackground from '../components/SceneBackground';
+import { CURRICULUM, isSubjectAvailable } from '../curriculum';
+import { loadProgress } from '../storage';
+import { colors, fonts, radius, shadow, spacing, subjectTheme, type } from '../theme';
 
-const SUBJECTS = [
-  { id: 'English', label: 'English', emoji: '🔤' },
-  { id: 'Math', label: 'Math', emoji: '🔢' },
-  { id: 'EVS', label: 'World Around Us', emoji: '🌎' },
-];
+const SUBJECTS = ['English', 'Math', 'EVS'];
 
 export default function SubjectSelectScreen({ route, navigation }) {
   const { grade } = route.params;
+  const [statsBySubject, setStatsBySubject] = useState({});
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      Promise.all(
+        SUBJECTS.map(async (id) => {
+          const topics = (CURRICULUM[grade]?.[id] ?? []).filter((t) => t.playable);
+          const records = await Promise.all(topics.map((t) => loadProgress(t.id)));
+          const done = records.filter((p, i) => p && p.index >= topics[i].total).length;
+          const stars = records.reduce((sum, p) => sum + (p?.stars ?? 0), 0);
+          return [id, { done, stars, total: topics.length }];
+        }),
+      )
+        .then((entries) => { if (!cancelled) setStatsBySubject(Object.fromEntries(entries)); })
+        .catch(() => {});
+      return () => { cancelled = true; };
+    }, [grade]),
+  );
 
   return (
-    <LinearGradient colors={bgGradient} style={styles.container}>
+    <SceneBackground>
       <StatusBar style="dark" />
       <BackButton onPress={() => navigation.goBack()} />
-      <Text style={styles.eyebrow}>{grade} · Step 2</Text>
-      <Text style={styles.title}>What do you want to learn today?</Text>
 
-      <View style={styles.grid}>
-        {SUBJECTS.map((subject, i) => {
-          const available = isSubjectAvailable(grade, subject.id);
-          const palette = cardPalette[(i + 2) % cardPalette.length];
+      <View style={styles.header}>
+        <Text style={styles.eyebrow}>{grade.toUpperCase()}</Text>
+        <Text style={styles.title}>What shall we play?</Text>
+
+        <View style={styles.pipRow}>
+          <MascotBadge size={38} mood="happy" />
+          <View style={styles.speech}>
+            <Text style={styles.speechText}>Pick anything you like!</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.list}>
+        {SUBJECTS.map((id, i) => {
+          const theme = subjectTheme[id];
+          const available = isSubjectAvailable(grade, id);
+          const stats = statsBySubject[id] ?? { done: 0, stars: 0, total: 0 };
+          const ratio = stats.total ? stats.done / stats.total : 0;
+
           return (
-            <FadeInCard key={subject.id} index={i}>
-              <BouncyButton
+            <FadeInCard key={id} index={i}>
+              <Pressable
                 disabled={!available}
-                style={[
+                onPress={() => navigation.navigate('TopicSelect', { grade, subject: id })}
+                style={({ pressed }) => [
                   styles.card,
-                  { backgroundColor: available ? palette.bg : colors.disabled },
+                  { backgroundColor: available ? theme.soft : colors.disabled },
+                  available && { borderColor: theme.base },
+                  pressed && styles.cardPressed,
                 ]}
-                onPress={() => navigation.navigate('TopicSelect', { grade, subject: subject.id })}
+                accessibilityRole="button"
+                accessibilityState={{ disabled: !available }}
+                accessibilityLabel={
+                  available
+                    ? `${theme.label}. ${stats.done} of ${stats.total} games finished.`
+                    : `${theme.label}, coming soon`
+                }
               >
-                <Text style={styles.cardEmoji}>{subject.emoji}</Text>
-                <Text style={[styles.cardLabel, !available && styles.cardLabelDisabled]}>
-                  {subject.label}
-                </Text>
-                {!available && <Text style={styles.soon}>Coming Soon</Text>}
-              </BouncyButton>
+                <View style={[styles.iconWrap, { backgroundColor: available ? theme.base : colors.lock }]}>
+                  <Text style={styles.icon}>{available ? theme.emoji : '🔒'}</Text>
+                </View>
+
+                <View style={styles.body}>
+                  <Text style={[styles.label, !available && styles.dimmed]}>{theme.label}</Text>
+                  <Text style={[styles.meta, !available && styles.dimmed]}>
+                    {available
+                      ? `${stats.total} ${stats.total === 1 ? 'game' : 'games'} · ⭐ ${stats.stars}`
+                      : 'Coming soon'}
+                  </Text>
+                </View>
+
+                {available && stats.total > 0 && (
+                  <ProgressRing progress={ratio} size={46} strokeWidth={5} color={theme.deep}>
+                    <RingLabel size={12}>{stats.done}/{stats.total}</RingLabel>
+                  </ProgressRing>
+                )}
+              </Pressable>
             </FadeInCard>
           );
         })}
       </View>
-    </LinearGradient>
+    </SceneBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: spacing.lg },
-  eyebrow: { fontFamily: fonts.bodyBold, color: colors.grapeDeep, fontSize: 13, marginTop: spacing.md },
-  title: { fontFamily: fonts.displayBold, fontSize: 26, color: colors.ink, marginBottom: spacing.lg, marginTop: spacing.xs },
-  grid: { gap: spacing.md },
-  card: {
-    borderRadius: radius.lg, padding: spacing.lg, alignItems: 'center',
-    shadowColor: '#000', shadowOpacity: 0.14, shadowRadius: 10, shadowOffset: { width: 0, height: 5 }, elevation: 3,
+  header: { paddingHorizontal: spacing.lg, marginTop: spacing.xl },
+  eyebrow: { ...type.eyebrow, color: colors.grapeDeep },
+  title: { ...type.title, color: colors.ink, marginTop: 2 },
+
+  pipRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginTop: spacing.sm },
+  speech: {
+    backgroundColor: colors.white, borderRadius: radius.pill,
+    paddingVertical: 7, paddingHorizontal: spacing.sm, ...shadow.sm,
   },
-  cardEmoji: { fontSize: 44, marginBottom: spacing.xs },
-  cardLabel: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.ink },
-  cardLabelDisabled: { color: colors.muted },
-  soon: { fontFamily: fonts.bodyBold, fontSize: 12, color: colors.muted, marginTop: 4 },
+  speechText: { fontFamily: fonts.body, fontSize: 13.5, color: colors.ink },
+
+  list: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg, gap: spacing.sm },
+  card: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    borderRadius: radius.lg, padding: spacing.sm, borderWidth: 2, borderColor: 'transparent',
+    ...shadow.sm,
+  },
+  cardPressed: { transform: [{ scale: 0.98 }] },
+  iconWrap: { width: 56, height: 56, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
+  icon: { fontSize: 27 },
+  body: { flex: 1 },
+  label: { fontFamily: fonts.displayBold, fontSize: 19, color: colors.ink },
+  meta: { fontFamily: fonts.body, fontSize: 13, color: colors.inkSoft },
+  dimmed: { color: colors.muted },
 });
