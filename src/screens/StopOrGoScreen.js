@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   actionEmoji: { fontSize: 30 },
-  actionLabel: { fontFamily: fonts.displayBold, fontSize: 13, color: colors.white, marginTop: 4 },
+  actionLabel: { fontFamily: fonts.displayBold, fontSize: 13, color: colors.ink, marginTop: 4 },
   starsRow: { marginTop: spacing.lg },
   starsText: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.sunDeep },
   celebrationOverlay: {
