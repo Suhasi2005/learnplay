@@ -1,6 +1,10 @@
 # LearnPlay
 
+**▶ Play it now: [suhasi2005.github.io/learnplay](https://suhasi2005.github.io/learnplay/)** — the real app, running in a browser. No install.
+
 A React Native learning-games app for young kids. A parent picks a grade and subject, then the child plays a mini-game that teaches the topic — no worksheets, no typing, just tapping and hearing.
+
+> The link above is the same React Native codebase compiled for web via `react-native-web`, so it's the actual app rather than a mockup. Speech and haptics are the two things browsers handle differently from a phone — for those, run it in Expo Go (see [Run](#run)).
 
 ## What's built
 
@@ -70,6 +74,14 @@ npm install
 npx expo start
 ```
 Press `a` for Android emulator, `i` for iOS simulator, or scan the QR code with Expo Go on a phone. No backend, no API key, no setup beyond `npm install`.
+
+On Windows, run this from **Command Prompt** rather than PowerShell — PowerShell's default execution policy blocks `npx.ps1`, while `cmd` calls `npx.cmd` and is unaffected.
+
+### Deploying the web build
+```bash
+npx expo export --platform web    # outputs to dist/
+```
+`app.json` sets `experiments.baseUrl` to `/learnplay` so assets resolve under the GitHub Pages project path. The deployed branch also needs a `.nojekyll` file at its root — without it Pages runs the output through Jekyll, which silently drops the `_expo/` directory and the app loads to a blank screen.
 
 ## Project structure
 ```
