@@ -5,10 +5,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
 import { ActivityIndicator, View } from 'react-native';
 import { SoundProvider } from './src/context/SoundContext';
+import AddItUpScreen from './src/screens/AddItUpScreen';
 import AlphabetGameScreen from './src/screens/AlphabetGameScreen';
 import CompletionScreen from './src/screens/CompletionScreen';
 import GradeSelectScreen from './src/screens/GradeSelectScreen';
 import NumberGameScreen from './src/screens/NumberGameScreen';
+import OppositesMatchScreen from './src/screens/OppositesMatchScreen';
 import SubjectSelectScreen from './src/screens/SubjectSelectScreen';
 import TopicSelectScreen from './src/screens/TopicSelectScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
@@ -48,6 +50,8 @@ export default function App() {
           <Stack.Screen name="TopicSelect" component={TopicSelectScreen} options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="AlphabetGame" component={AlphabetGameScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="NumberGame" component={NumberGameScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="OppositesMatch" component={OppositesMatchScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="AddItUp" component={AddItUpScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="Completion" component={CompletionScreen} options={{ animation: 'fade' }} />
         </Stack.Navigator>
       </NavigationContainer>
