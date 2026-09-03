@@ -5,19 +5,25 @@ import { Animated, StyleSheet, Text } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import BouncyButton from '../components/BouncyButton';
 import { useSound } from '../context/SoundContext';
-import { ALPHABET } from '../gameData';
 import { clearProgress } from '../storage';
 import { colors, fonts, radius, spacing } from '../theme';
 
 export default function CompletionScreen({ route, navigation }) {
-  const stars = route.params?.stars ?? 0;
+  const {
+    gameId = 'abc',
+    stars = 0,
+    replayScreen = 'AlphabetGame',
+    title = 'You did it!',
+    subtitle = 'Great job!',
+  } = route.params ?? {};
+
   const { speak } = useSound();
   const spin = useRef(new Animated.Value(0)).current;
   const spinAnim = useRef(null);
 
   useEffect(() => {
-    clearProgress();
-    speak("You did it! You learned the whole alphabet!", { rate: 0.95, pitch: 1.15 });
+    clearProgress(gameId);
+    speak(`${title} ${subtitle}`, { rate: 0.95, pitch: 1.15 });
     spinAnim.current = Animated.loop(
       Animated.timing(spin, { toValue: 1, duration: 3000, useNativeDriver: true }),
     );
@@ -34,14 +40,14 @@ export default function CompletionScreen({ route, navigation }) {
       <ConfettiCannon count={120} origin={{ x: 400, y: 0 }} fadeOut fallSpeed={3200} />
 
       <Animated.Text style={[styles.trophy, { transform: [{ rotate }] }]}>🏆</Animated.Text>
-      <Text style={styles.title}>You did it!</Text>
-      <Text style={styles.subtitle}>You learned all {ALPHABET.length} letters!</Text>
+      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.subtitle}>{subtitle}</Text>
 
       <Text style={styles.starsText}>⭐ {stars} Stars</Text>
 
       <BouncyButton
         style={styles.button}
-        onPress={() => navigation.navigate('AlphabetGame')}
+        onPress={() => navigation.navigate(replayScreen)}
       >
         <Text style={styles.buttonText}>Play Again 🔁</Text>
       </BouncyButton>
@@ -58,8 +64,8 @@ export default function CompletionScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
   trophy: { fontSize: 100, marginBottom: spacing.sm },
-  title: { fontFamily: fonts.displayBold, fontSize: 34, color: colors.white },
-  subtitle: { fontFamily: fonts.body, fontSize: 16, color: colors.white, marginTop: spacing.xs, marginBottom: spacing.md },
+  title: { fontFamily: fonts.displayBold, fontSize: 34, color: colors.white, textAlign: 'center' },
+  subtitle: { fontFamily: fonts.body, fontSize: 16, color: colors.white, marginTop: spacing.xs, marginBottom: spacing.md, textAlign: 'center' },
   starsText: { fontFamily: fonts.displayBold, fontSize: 26, color: colors.white, marginBottom: spacing.xl },
   button: {
     backgroundColor: colors.white, paddingVertical: spacing.sm, paddingHorizontal: spacing.xl,
