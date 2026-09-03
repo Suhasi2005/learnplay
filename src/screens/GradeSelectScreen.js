@@ -1,3 +1,4 @@
+import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import BackButton from '../components/BackButton';
 import BouncyButton from '../components/BouncyButton';
@@ -12,6 +13,7 @@ const GRADES = [
 export default function GradeSelectScreen({ navigation }) {
   return (
     <View style={styles.container}>
+      <StatusBar style="dark" />
       <BackButton onPress={() => navigation.goBack()} />
       <Text style={styles.eyebrow}>Step 1</Text>
       <Text style={styles.title}>Which grade is your child in?</Text>
@@ -25,7 +27,7 @@ export default function GradeSelectScreen({ navigation }) {
               disabled={!grade.available}
               style={[
                 styles.card,
-                { backgroundColor: grade.available ? palette.bg : '#E4DED6' },
+                { backgroundColor: grade.available ? palette.bg : colors.disabled },
               ]}
               onPress={() => navigation.navigate('SubjectSelect', { grade: grade.label })}
             >
