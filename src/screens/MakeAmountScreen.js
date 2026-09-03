@@ -80,6 +80,15 @@ export default function MakeAmountScreen({ route, navigation }) {
     Haptics.selectionAsync();
   }
 
+  // Overshooting a target previously had no fix except a full reset, which
+  // is a harsh penalty for one misplaced coin — let a child tap a coin they
+  // already placed to take just that one back.
+  function removeCoinAt(index) {
+    if (isProcessing) return;
+    setPicked((prev) => prev.filter((_, i) => i !== index));
+    Haptics.selectionAsync();
+  }
+
   function handleDone() {
     if (isProcessing || picked.length === 0) return;
 
@@ -148,9 +157,12 @@ export default function MakeAmountScreen({ route, navigation }) {
 
       <View style={styles.pickedRow}>
         {picked.map((v, i) => (
-          <Text key={i} style={styles.pickedCoin}>{COINS.find((c) => c.value === v)?.emoji}</Text>
+          <BouncyButton key={i} onPress={() => removeCoinAt(i)} accessibilityLabel={`Remove this coin`}>
+            <Text style={styles.pickedCoin}>{COINS.find((c) => c.value === v)?.emoji}</Text>
+          </BouncyButton>
         ))}
       </View>
+      {picked.length > 0 && <Text style={styles.pickedHint}>Tap a coin above to take it back</Text>}
 
       <View style={styles.coinRow}>
         {COINS.map((coin) => (
@@ -200,18 +212,19 @@ const styles = StyleSheet.create({
   totalText: { fontFamily: fonts.displayBold, fontSize: 36, color: colors.sunDeep },
   pickedRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', minHeight: 30, marginTop: spacing.sm, maxWidth: 260 },
   pickedCoin: { fontSize: 20, marginHorizontal: 2 },
+  pickedHint: { fontFamily: fonts.body, fontSize: 11, color: colors.muted, marginTop: 2 },
   coinRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md },
   coinButton: {
     width: 84, height: 84, borderRadius: radius.lg, backgroundColor: colors.grape, alignItems: 'center', justifyContent: 'center',
     shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   coinEmoji: { fontSize: 28 },
-  coinLabel: { fontFamily: fonts.displayBold, fontSize: 13, color: colors.white, marginTop: 2 },
+  coinLabel: { fontFamily: fonts.displayBold, fontSize: 13, color: colors.ink, marginTop: 2 },
   actionRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.lg },
   resetButton: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md, borderRadius: radius.pill, backgroundColor: colors.disabled },
   resetText: { fontFamily: fonts.bodyBold, color: colors.ink, fontSize: 14 },
   doneButton: { paddingVertical: spacing.sm, paddingHorizontal: spacing.xl, borderRadius: radius.pill, backgroundColor: colors.grassDeep },
-  doneText: { fontFamily: fonts.displayBold, color: colors.white, fontSize: 16 },
+  doneText: { fontFamily: fonts.displayBold, color: colors.ink, fontSize: 16 },
   starsRow: { marginTop: spacing.lg },
   starsText: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.sunDeep },
   celebrationOverlay: {
