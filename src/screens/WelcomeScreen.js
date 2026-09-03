@@ -92,8 +92,17 @@ const styles = StyleSheet.create({
   star2: { bottom: '28%', right: '14%' },
   star3: { bottom: '16%', left: '12%' },
   mascot: { fontSize: 96, marginBottom: spacing.md },
-  title: { fontFamily: fonts.displayBold, fontSize: 44, color: colors.white, marginBottom: spacing.xs },
-  subtitle: { fontFamily: fonts.body, fontSize: 17, color: colors.white, opacity: 0.95, marginBottom: spacing.xl, textAlign: 'center' },
+  // White text measured 1.9-2.6:1 against the sky/skyDeep gradient (WCAG AA
+  // needs 3:1+). A dark shadow keeps the bright hero look while restoring
+  // real legibility, rather than switching to dark text on a "sky" screen.
+  title: {
+    fontFamily: fonts.displayBold, fontSize: 44, color: colors.white, marginBottom: spacing.xs,
+    textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 6,
+  },
+  subtitle: {
+    fontFamily: fonts.body, fontSize: 17, color: colors.white, marginBottom: spacing.xl, textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4,
+  },
   cta: {
     backgroundColor: colors.sun, paddingVertical: spacing.md, paddingHorizontal: spacing.xl,
     borderRadius: radius.pill, borderWidth: 4, borderColor: colors.white,
@@ -101,8 +110,12 @@ const styles = StyleSheet.create({
   },
   ctaText: { fontFamily: fonts.displayBold, fontSize: 22, color: colors.ink },
   badgeRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xl },
+  // This pill's translucent-white fill lightens the effective background
+  // even further, so white text here would be worse than on the gradient
+  // itself — a solid white pill with dark text is both more legible and
+  // more readable as "a chip", the same pattern disabled cards use elsewhere.
   badge: {
-    fontFamily: fonts.bodyBold, color: colors.white, backgroundColor: 'rgba(255,255,255,0.22)',
+    fontFamily: fonts.bodyBold, color: colors.ink, backgroundColor: colors.white,
     paddingVertical: spacing.xs, paddingHorizontal: spacing.sm, borderRadius: radius.pill, fontSize: 13,
   },
 });
