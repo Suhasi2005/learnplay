@@ -1,18 +1,21 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import BackButton from '../components/BackButton';
 import BouncyButton from '../components/BouncyButton';
-import { cardPalette, colors, fonts, radius, spacing } from '../theme';
+import FadeInCard from '../components/FadeInCard';
+import { isGradeAvailable } from '../curriculum';
+import { bgGradient, cardPalette, colors, fonts, radius, spacing } from '../theme';
 
 const GRADES = [
-  { id: 'jrkg', label: 'Junior KG', emoji: '🧸', available: true },
-  { id: 'srkg', label: 'Senior KG', emoji: '🎈', available: false },
-  { id: 'g1', label: 'Grade 1', emoji: '📘', available: false },
+  { id: 'jrkg', label: 'Junior KG', emoji: '🧸' },
+  { id: 'srkg', label: 'Senior KG', emoji: '🎈' },
+  { id: 'g1', label: 'Grade 1', emoji: '📘' },
 ];
 
 export default function GradeSelectScreen({ navigation }) {
   return (
-    <View style={styles.container}>
+    <LinearGradient colors={bgGradient} style={styles.container}>
       <StatusBar style="dark" />
       <BackButton onPress={() => navigation.goBack()} />
       <Text style={styles.eyebrow}>Step 1</Text>
@@ -20,38 +23,40 @@ export default function GradeSelectScreen({ navigation }) {
 
       <View style={styles.grid}>
         {GRADES.map((grade, i) => {
+          const available = isGradeAvailable(grade.label);
           const palette = cardPalette[i % cardPalette.length];
           return (
-            <BouncyButton
-              key={grade.id}
-              disabled={!grade.available}
-              style={[
-                styles.card,
-                { backgroundColor: grade.available ? palette.bg : colors.disabled },
-              ]}
-              onPress={() => navigation.navigate('SubjectSelect', { grade: grade.label })}
-            >
-              <Text style={styles.cardEmoji}>{grade.emoji}</Text>
-              <Text style={[styles.cardLabel, !grade.available && styles.cardLabelDisabled]}>
-                {grade.label}
-              </Text>
-              {!grade.available && <Text style={styles.soon}>Coming Soon</Text>}
-            </BouncyButton>
+            <FadeInCard key={grade.id} index={i}>
+              <BouncyButton
+                disabled={!available}
+                style={[
+                  styles.card,
+                  { backgroundColor: available ? palette.bg : colors.disabled },
+                ]}
+                onPress={() => navigation.navigate('SubjectSelect', { grade: grade.label })}
+              >
+                <Text style={styles.cardEmoji}>{grade.emoji}</Text>
+                <Text style={[styles.cardLabel, !available && styles.cardLabelDisabled]}>
+                  {grade.label}
+                </Text>
+                {!available && <Text style={styles.soon}>Coming Soon</Text>}
+              </BouncyButton>
+            </FadeInCard>
           );
         })}
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.cream, padding: spacing.lg },
+  container: { flex: 1, padding: spacing.lg },
   eyebrow: { fontFamily: fonts.bodyBold, color: colors.grapeDeep, fontSize: 13, marginTop: spacing.md },
   title: { fontFamily: fonts.displayBold, fontSize: 26, color: colors.ink, marginBottom: spacing.lg, marginTop: spacing.xs },
   grid: { gap: spacing.md },
   card: {
     borderRadius: radius.lg, padding: spacing.lg, alignItems: 'center',
-    shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
+    shadowColor: '#000', shadowOpacity: 0.14, shadowRadius: 10, shadowOffset: { width: 0, height: 5 }, elevation: 3,
   },
   cardEmoji: { fontSize: 44, marginBottom: spacing.xs },
   cardLabel: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.white },
