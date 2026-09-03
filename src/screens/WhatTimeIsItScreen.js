@@ -7,6 +7,7 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 import BackButton from '../components/BackButton';
 import BouncyButton from '../components/BouncyButton';
 import ClockFace from '../components/ClockFace';
+import Mascot from '../components/Mascot';
 import StreakBadge from '../components/StreakBadge';
 import { useSound } from '../context/SoundContext';
 import { TOTAL_ROUNDS, buildRound } from '../timeData';
@@ -150,6 +151,7 @@ export default function WhatTimeIsItScreen({ route, navigation }) {
 
       {showCelebration && (
         <View style={styles.celebrationOverlay} pointerEvents="none">
+          <Mascot mood="cheer" size={78} />
           <Animated.Text style={[styles.celebrationEmoji, { transform: [{ scale: popScale }] }]}>🕐</Animated.Text>
           <Text style={styles.celebrationText}>It's {round.label}!</Text>
         </View>
@@ -170,7 +172,7 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.sm, maxWidth: 300, marginTop: spacing.lg },
   option: {
     width: 76, height: 56, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
+    shadowColor: colors.ink, shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   optionText: { fontFamily: fonts.displayBold, fontSize: 18, color: colors.ink },
   starsRow: { marginTop: spacing.lg },
