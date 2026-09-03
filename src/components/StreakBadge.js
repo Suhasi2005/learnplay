@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text } from 'react-native';
-import { colors, fonts, radius, spacing } from '../theme';
+import { colors, fonts, radius, shadow, spacing } from '../theme';
 
 export default function StreakBadge({ streak }) {
   const pop = useRef(new Animated.Value(0)).current;
@@ -24,12 +24,13 @@ export default function StreakBadge({ streak }) {
 const styles = StyleSheet.create({
   badge: {
     position: 'absolute', top: 60, alignSelf: 'center',
-    backgroundColor: colors.coral, borderRadius: radius.pill,
+    backgroundColor: colors.sun, borderRadius: radius.pill,
     paddingVertical: spacing.xs, paddingHorizontal: spacing.md,
-    borderWidth: 2, borderColor: colors.white,
-    shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 3,
+    borderWidth: 3, borderColor: colors.white,
+    ...shadow.md,
   },
-  // White on coral measures ~2.7:1 (fails WCAG AA even for large text);
-  // ink on coral measures ~4.8:1 (passes normal-text AA).
+  // Gold rather than alarm-coral: a streak is a reward, and it shares the
+  // star colour it's rewarding. Ink on sun measures 8.4:1 — the most legible
+  // pairing in the palette, which matters for something this small.
   text: { fontFamily: fonts.bodyBold, color: colors.ink, fontSize: 13 },
 });
