@@ -6,6 +6,7 @@ import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import BackButton from '../components/BackButton';
 import BouncyButton from '../components/BouncyButton';
+import Mascot from '../components/Mascot';
 import StreakBadge from '../components/StreakBadge';
 import { useSound } from '../context/SoundContext';
 import { BINS, ITEMS } from '../livingData';
@@ -151,6 +152,7 @@ export default function LivingOrNotScreen({ route, navigation }) {
 
       {showCelebration && (
         <View style={styles.celebrationOverlay} pointerEvents="none">
+          <Mascot mood="cheer" size={78} />
           <Animated.Text style={[styles.celebrationEmoji, { transform: [{ scale: popScale }] }]}>{item.emoji}</Animated.Text>
           <Text style={styles.celebrationText}>{item.label} is {BINS.find((b) => b.id === item.category)?.label}!</Text>
         </View>
@@ -169,14 +171,14 @@ const styles = StyleSheet.create({
   dotActive: { backgroundColor: colors.sunDeep, width: 10, height: 10, borderRadius: 5 },
   itemBox: {
     marginTop: spacing.lg, backgroundColor: colors.white, borderRadius: radius.lg, padding: spacing.lg,
-    shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 3,
+    shadowColor: colors.ink, shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 3,
   },
   itemEmoji: { fontSize: 90 },
   prompt: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.ink, marginTop: spacing.md, marginBottom: spacing.lg, textAlign: 'center' },
   binRow: { flexDirection: 'row', gap: spacing.md },
   bin: {
     width: 140, height: 110, borderRadius: radius.lg, backgroundColor: colors.grape, alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
+    shadowColor: colors.ink, shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   binEmoji: { fontSize: 36 },
   binLabel: { fontFamily: fonts.displayBold, fontSize: 16, color: colors.ink, marginTop: 4 },
