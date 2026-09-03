@@ -7,13 +7,18 @@ import { ActivityIndicator, View } from 'react-native';
 import { SoundProvider } from './src/context/SoundContext';
 import AddItUpScreen from './src/screens/AddItUpScreen';
 import AlphabetGameScreen from './src/screens/AlphabetGameScreen';
+import BiggerOrSmallerScreen from './src/screens/BiggerOrSmallerScreen';
 import CompletionScreen from './src/screens/CompletionScreen';
 import GradeSelectScreen from './src/screens/GradeSelectScreen';
 import NumberGameScreen from './src/screens/NumberGameScreen';
+import OddOneOutScreen from './src/screens/OddOneOutScreen';
 import OppositesMatchScreen from './src/screens/OppositesMatchScreen';
+import ShapeSortScreen from './src/screens/ShapeSortScreen';
+import StopOrGoScreen from './src/screens/StopOrGoScreen';
 import SubjectSelectScreen from './src/screens/SubjectSelectScreen';
 import TopicSelectScreen from './src/screens/TopicSelectScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
+import WhatComesNextScreen from './src/screens/WhatComesNextScreen';
 import { colors } from './src/theme';
 
 const Stack = createNativeStackNavigator();
@@ -52,6 +57,11 @@ export default function App() {
           <Stack.Screen name="NumberGame" component={NumberGameScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="OppositesMatch" component={OppositesMatchScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="AddItUp" component={AddItUpScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="ShapeSort" component={ShapeSortScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="StopOrGo" component={StopOrGoScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="WhatComesNext" component={WhatComesNextScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="BiggerOrSmaller" component={BiggerOrSmallerScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="OddOneOut" component={OddOneOutScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="Completion" component={CompletionScreen} options={{ animation: 'fade' }} />
         </Stack.Navigator>
       </NavigationContainer>
