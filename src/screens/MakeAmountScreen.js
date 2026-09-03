@@ -19,7 +19,7 @@ export default function MakeAmountScreen({ route, navigation }) {
   const startStars = route.params?.startStars ?? 0;
   const GAME_ID = route.params?.topicId ?? 'sk-ma-money';
 
-  const { speak } = useSound();
+  const { speak, playSuccess, playWrong } = useSound();
   const [index, setIndex] = useState(startIndex);
   const [stars, setStars] = useState(startStars);
   const [streak, setStreak] = useState(0);
@@ -102,6 +102,7 @@ export default function MakeAmountScreen({ route, navigation }) {
       triggerPop();
       confettiRef.current?.start();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      playSuccess();
       speak(`Yes! That's ${round.target} rupees!`, { rate: 0.95, pitch: 1.15 });
       saveProgress(GAME_ID, index + 1, newStars);
 
@@ -127,6 +128,7 @@ export default function MakeAmountScreen({ route, navigation }) {
       setStreak(0);
       triggerShake();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      playWrong();
       speak(total > round.target ? "That's too much! Try again." : "Not quite enough! Try again.", { rate: 0.95, pitch: 1.15 });
       wrongTimeout.current = setTimeout(() => {
         if (isMounted.current) setWrongPulse(false);
