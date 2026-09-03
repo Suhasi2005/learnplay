@@ -3,8 +3,8 @@ import { Fredoka_600SemiBold, Fredoka_700Bold } from '@expo-google-fonts/fredoka
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
-import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View } from 'react-native';
+import { SoundProvider } from './src/context/SoundContext';
 import AlphabetGameScreen from './src/screens/AlphabetGameScreen';
 import CompletionScreen from './src/screens/CompletionScreen';
 import GradeSelectScreen from './src/screens/GradeSelectScreen';
@@ -32,18 +32,23 @@ export default function App() {
   }
 
   return (
-    <>
-      <StatusBar style="light" />
+    <SoundProvider>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            animation: 'fade_from_bottom',
+            animationDuration: 220,
+          }}
+        >
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
-          <Stack.Screen name="GradeSelect" component={GradeSelectScreen} />
-          <Stack.Screen name="SubjectSelect" component={SubjectSelectScreen} />
-          <Stack.Screen name="TopicSelect" component={TopicSelectScreen} />
-          <Stack.Screen name="AlphabetGame" component={AlphabetGameScreen} />
-          <Stack.Screen name="Completion" component={CompletionScreen} />
+          <Stack.Screen name="GradeSelect" component={GradeSelectScreen} options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="SubjectSelect" component={SubjectSelectScreen} options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="TopicSelect" component={TopicSelectScreen} options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="AlphabetGame" component={AlphabetGameScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="Completion" component={CompletionScreen} options={{ animation: 'fade' }} />
         </Stack.Navigator>
       </NavigationContainer>
-    </>
+    </SoundProvider>
   );
 }
