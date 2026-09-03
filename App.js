@@ -9,16 +9,26 @@ import AddItUpScreen from './src/screens/AddItUpScreen';
 import AlphabetGameScreen from './src/screens/AlphabetGameScreen';
 import BiggerOrSmallerScreen from './src/screens/BiggerOrSmallerScreen';
 import CompletionScreen from './src/screens/CompletionScreen';
+import DressForSeasonScreen from './src/screens/DressForSeasonScreen';
 import GradeSelectScreen from './src/screens/GradeSelectScreen';
+import GroupsOfScreen from './src/screens/GroupsOfScreen';
+import LivingOrNotScreen from './src/screens/LivingOrNotScreen';
+import MakeAmountScreen from './src/screens/MakeAmountScreen';
 import NumberGameScreen from './src/screens/NumberGameScreen';
+import NumberLineGapScreen from './src/screens/NumberLineGapScreen';
 import OddOneOutScreen from './src/screens/OddOneOutScreen';
 import OppositesMatchScreen from './src/screens/OppositesMatchScreen';
+import PointToTheScreen from './src/screens/PointToTheScreen';
+import ReadTheChartScreen from './src/screens/ReadTheChartScreen';
 import ShapeSortScreen from './src/screens/ShapeSortScreen';
 import StopOrGoScreen from './src/screens/StopOrGoScreen';
 import SubjectSelectScreen from './src/screens/SubjectSelectScreen';
 import TopicSelectScreen from './src/screens/TopicSelectScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import WhatComesNextScreen from './src/screens/WhatComesNextScreen';
+import WhatTimeIsItScreen from './src/screens/WhatTimeIsItScreen';
+import WhoSaysThatScreen from './src/screens/WhoSaysThatScreen';
+import WhoUsesThisScreen from './src/screens/WhoUsesThisScreen';
 import { colors } from './src/theme';
 
 const Stack = createNativeStackNavigator();
@@ -62,6 +72,16 @@ export default function App() {
           <Stack.Screen name="WhatComesNext" component={WhatComesNextScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="BiggerOrSmaller" component={BiggerOrSmallerScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="OddOneOut" component={OddOneOutScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="MakeAmount" component={MakeAmountScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="WhatTimeIsIt" component={WhatTimeIsItScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="GroupsOf" component={GroupsOfScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="ReadTheChart" component={ReadTheChartScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="NumberLineGap" component={NumberLineGapScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="WhoUsesThis" component={WhoUsesThisScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="PointToThe" component={PointToTheScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="LivingOrNot" component={LivingOrNotScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="DressForSeason" component={DressForSeasonScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="WhoSaysThat" component={WhoSaysThatScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="Completion" component={CompletionScreen} options={{ animation: 'fade' }} />
         </Stack.Navigator>
       </NavigationContainer>
