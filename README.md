@@ -62,7 +62,7 @@ This app went through actual bug-fixing passes, not just feature passes:
 - Full codebase re-linted (`oxlint`) after every round of new games — zero warnings, every time.
 
 ## Tech Stack
-React Native, Expo, React Navigation, `expo-speech`, `expo-audio`, `expo-haptics`, `expo-linear-gradient`, `react-native-confetti-cannon`, `@react-native-async-storage/async-storage`, Google Fonts (Fredoka + Baloo 2) via `@expo-google-fonts`
+React Native, Expo, React Navigation, `react-native-svg`, `expo-speech`, `expo-audio`, `expo-haptics`, `expo-linear-gradient`, `react-native-confetti-cannon`, `@react-native-async-storage/async-storage`, Google Fonts (Fredoka + Baloo 2) via `@expo-google-fonts`
 
 ## Run
 ```bash
@@ -87,16 +87,36 @@ src/
   context/
     SoundContext.js                # app-wide mute toggle + speak()/playSuccess()/playWrong()/playComplete()
   components/
-    BouncyButton.js                 # shared tap animation used by every button in the app
+    Mascot.js                       # Pip — the SVG companion character, one shape across 5 moods
+    GameButton.js                   # the chunky press-to-compress button
+    SceneBackground.js              # drifting blob/sparkle world behind every screen
+    StarRow.js / ProgressRing.js    # the reward + progress vocabulary
+    BouncyButton.js                 # shared tap animation used inside the games
     BackButton.js / StreakBadge.js / FadeInCard.js / ClockFace.js
   screens/
-    WelcomeScreen.js
+    WelcomeScreen.js                                                       # home
     GradeSelectScreen.js / SubjectSelectScreen.js / TopicSelectScreen.js   # all derived from curriculum.js
     [19 game screens, one per game above]
     CompletionScreen.js                                                    # generalized via route params
+    ParentGateScreen.js / ParentAreaScreen.js                              # the grown-up side
 assets/
   sounds/                          # success.wav / wrong.wav / complete.wav — generated, see below
+tools/
+  generate-sounds.mjs              # regenerates those three files from scratch
 ```
+
+## Design system
+Everything visual resolves through `src/theme.js`, which is why a palette change restyles 19 games without editing 19 files.
+
+**One brand hue, four semantic accents.** Grape carries identity and every primary action. The other four are assigned by *meaning*, not decoration — a subject keeps its colour on the map, in the level list and on the reward screen, so the association is learnable rather than random. Grape is deliberately excluded from the answer-card palette for two reasons at once: it's the brand colour and shouldn't appear as a random option tint, and it's the one accent dark enough that dark text fails on it (2.93:1, under the 3:1 floor). Every remaining pairing clears 5.3:1.
+
+**Contrast is measured, not eyeballed.** The palette was checked by computing WCAG relative luminance for every text/surface pairing the app actually renders. That caught three real failures in the first draft — the secondary text colour at 3.81:1, the hero gradient's light end, and the grape card above — all fixed before anything shipped.
+
+**Buttons compress.** `GameButton` draws a darker base with a lighter face floating above it; pressing drops the face into the base and it springs back. A flat rectangle that only changes opacity doesn't read as pressable to a five-year-old, and that one detail is most of the difference between "web page" and "game".
+
+**Pip is drawn, not imported.** The companion character is SVG, so all five moods are the same creature with different eyes and mouth. That's what makes it read as one character reacting rather than a set of unrelated stickers — two emoji can't do it, because they're two different drawings by two different hands. Pip greets on the home screen, comments on the subject screen, cheers inside every game's success overlay, and celebrates on the reward screen.
+
+**A parental gate guards the grown-up side.** It's a two-digit multiplication, deliberately outside everything the app teaches — its own maths games top out at adding single digits. It protects settings and progress-reset, so the bar is "a young child can't pass it by accident", not real security.
 
 ## Sound effects
 Every game now plays a short chime on a right answer, a wrong answer, and a finished topic, layered under the existing spoken feedback. The blocker here was never the code — it was that shipping audio means shipping someone's licensed work, and a kids' app is a bad place to be vague about rights.
