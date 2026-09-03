@@ -69,9 +69,9 @@ export default function WelcomeScreen({ navigation }) {
       </BouncyButton>
 
       <View style={styles.badgeRow}>
-        <Text style={styles.badge}>🔤 Letters</Text>
-        <Text style={styles.badge}>🔢 Numbers</Text>
-        <Text style={styles.badge}>🎨 Colors</Text>
+        <Text style={styles.badge}>🔤 English</Text>
+        <Text style={styles.badge}>🔢 Math</Text>
+        <Text style={styles.badge}>🌎 World Around Us</Text>
       </View>
     </LinearGradient>
   );
