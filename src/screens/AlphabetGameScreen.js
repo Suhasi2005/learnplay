@@ -13,6 +13,7 @@ import { cardPalette, colors, fonts, radius, spacing } from '../theme';
 
 const WRONG_ATTEMPTS_BEFORE_HINT = 2;
 const SCREEN_WIDTH = Dimensions.get('window').width;
+const GAME_ID = 'abc';
 
 export default function AlphabetGameScreen({ route, navigation }) {
   const startIndex = route.params?.startIndex ?? 0;
@@ -92,7 +93,7 @@ export default function AlphabetGameScreen({ route, navigation }) {
       confettiRef.current?.start();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       speak(`Yes! ${round.letter} is for ${round.word}!`, { rate: 0.95, pitch: 1.15 });
-      saveProgress(index + 1, newStars);
+      saveProgress(GAME_ID, index + 1, newStars);
 
       advanceTimeout.current = setTimeout(() => {
         if (!isMounted.current) return;
@@ -101,7 +102,14 @@ export default function AlphabetGameScreen({ route, navigation }) {
         if (index + 1 < ALPHABET.length) {
           setIndex((i) => i + 1);
         } else {
-          navigation.replace('Completion', { stars: newStars });
+          navigation.replace('Completion', {
+            gameId: GAME_ID,
+            stars: newStars,
+            total: ALPHABET.length,
+            replayScreen: 'AlphabetGame',
+            title: 'You did it!',
+            subtitle: `You learned all ${ALPHABET.length} letters!`,
+          });
         }
       }, 1400);
     } else {
