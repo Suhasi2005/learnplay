@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   optionEmoji: { fontSize: 34 },
-  optionLabel: { fontFamily: fonts.bodyBold, fontSize: 12, color: colors.white, marginTop: 2, textAlign: 'center' },
+  optionLabel: { fontFamily: fonts.bodyBold, fontSize: 12, color: colors.ink, marginTop: 2, textAlign: 'center' },
   starsRow: { marginTop: spacing.lg },
   starsText: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.sunDeep },
   celebrationOverlay: {
