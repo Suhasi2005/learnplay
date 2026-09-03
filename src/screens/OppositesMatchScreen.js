@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   card: {
     width: 82, height: 100, borderRadius: radius.md, backgroundColor: colors.white,
     borderWidth: 2, borderColor: colors.border, alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 2,
+    shadowColor: colors.ink, shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 2,
   },
   cardSelected: { borderColor: colors.grapeDeep, borderWidth: 3, backgroundColor: colors.grape + '22' },
   cardEmoji: { fontSize: 32 },
