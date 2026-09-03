@@ -17,12 +17,13 @@ export default function CompletionScreen({ route, navigation }) {
     subtitle = 'Great job!',
   } = route.params ?? {};
 
-  const { speak } = useSound();
+  const { speak, playComplete } = useSound();
   const spin = useRef(new Animated.Value(0)).current;
   const spinAnim = useRef(null);
 
   useEffect(() => {
     clearProgress(gameId);
+    playComplete();
     speak(`${title} ${subtitle}`, { rate: 0.95, pitch: 1.15 });
     spinAnim.current = Animated.loop(
       Animated.timing(spin, { toValue: 1, duration: 3000, useNativeDriver: true }),
