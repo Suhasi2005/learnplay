@@ -13,11 +13,11 @@ import { cardPalette, colors, fonts, radius, spacing } from '../theme';
 
 const WRONG_ATTEMPTS_BEFORE_HINT = 2;
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const GAME_ID = 'abc';
 
 export default function AlphabetGameScreen({ route, navigation }) {
   const startIndex = route.params?.startIndex ?? 0;
   const startStars = route.params?.startStars ?? 0;
+  const GAME_ID = route.params?.topicId ?? 'jk-en-abc';
 
   const { speak } = useSound();
   const [index, setIndex] = useState(startIndex);
