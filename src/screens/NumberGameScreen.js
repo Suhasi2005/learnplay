@@ -13,7 +13,6 @@ import { cardPalette, colors, fonts, radius, spacing } from '../theme';
 
 const WRONG_ATTEMPTS_BEFORE_HINT = 2;
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const GAME_ID = 'numbers';
 
 function EmojiCluster({ emoji, count }) {
   return (
@@ -28,6 +27,7 @@ function EmojiCluster({ emoji, count }) {
 export default function NumberGameScreen({ route, navigation }) {
   const startIndex = route.params?.startIndex ?? 0;
   const startStars = route.params?.startStars ?? 0;
+  const GAME_ID = route.params?.topicId ?? 'jk-ma-numbers';
 
   const { speak } = useSound();
   const [index, setIndex] = useState(startIndex);
