@@ -1,28 +1,30 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const PROGRESS_KEY = 'learnplay.abcProgress';
+const PROGRESS_PREFIX = 'learnplay.progress.';
 const SETTINGS_KEY = 'learnplay.settings';
 
-export async function saveProgress(index, stars) {
+// gameId scopes progress per mini-game (e.g. 'abc', 'numbers'), so playing
+// one doesn't clobber or get confused with progress in another.
+export async function saveProgress(gameId, index, stars) {
   try {
-    await AsyncStorage.setItem(PROGRESS_KEY, JSON.stringify({ index, stars }));
+    await AsyncStorage.setItem(PROGRESS_PREFIX + gameId, JSON.stringify({ index, stars }));
   } catch {
     // Non-fatal: progress just won't be remembered this session.
   }
 }
 
-export async function loadProgress() {
+export async function loadProgress(gameId) {
   try {
-    const raw = await AsyncStorage.getItem(PROGRESS_KEY);
+    const raw = await AsyncStorage.getItem(PROGRESS_PREFIX + gameId);
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
 }
 
-export async function clearProgress() {
+export async function clearProgress(gameId) {
   try {
-    await AsyncStorage.removeItem(PROGRESS_KEY);
+    await AsyncStorage.removeItem(PROGRESS_PREFIX + gameId);
   } catch {
     // ignore
   }
