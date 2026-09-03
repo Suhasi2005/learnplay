@@ -6,6 +6,7 @@ import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import BackButton from '../components/BackButton';
 import BouncyButton from '../components/BouncyButton';
+import Mascot from '../components/Mascot';
 import StreakBadge from '../components/StreakBadge';
 import { PROBLEMS, buildRound } from '../addItUpData';
 import { useSound } from '../context/SoundContext';
@@ -207,6 +208,7 @@ export default function AddItUpScreen({ route, navigation }) {
 
       {showCelebration && (
         <View style={styles.celebrationOverlay} pointerEvents="none">
+          <Mascot mood="cheer" size={78} />
           <Animated.Text style={[styles.celebrationEmoji, { transform: [{ scale: popScale }] }]}>🎉</Animated.Text>
           <Text style={styles.celebrationText}>{round.a} + {round.b} = {round.sum}</Text>
         </View>
@@ -233,7 +235,7 @@ const styles = StyleSheet.create({
   equationRow: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginTop: spacing.lg,
     backgroundColor: colors.white, borderRadius: radius.lg, padding: spacing.md,
-    shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
+    shadowColor: colors.ink, shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   cluster: { flexDirection: 'row', flexWrap: 'wrap', width: 68, alignItems: 'center', justifyContent: 'center' },
   clusterEmoji: { fontSize: 22, margin: 1 },
@@ -243,7 +245,7 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.md, maxWidth: 340 },
   option: {
     width: 68, height: 68, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
+    shadowColor: colors.ink, shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   optionText: { fontFamily: fonts.displayBold, fontSize: 28, color: colors.ink },
   starsRow: { marginTop: spacing.lg },
