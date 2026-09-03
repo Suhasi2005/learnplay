@@ -62,7 +62,7 @@ export default function OppositesMatchScreen({ route, navigation }) {
   const startStars = route.params?.startStars ?? 0;
   const GAME_ID = route.params?.topicId ?? 'sk-ma-opposites';
 
-  const { speak } = useSound();
+  const { speak, playSuccess, playWrong } = useSound();
   const [level, setLevel] = useState(startIndex);
   const [stars, setStars] = useState(startStars);
   const [streak, setStreak] = useState(0);
@@ -116,6 +116,7 @@ export default function OppositesMatchScreen({ route, navigation }) {
       setStreak(newStreak);
       setSelectedId(null);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      playSuccess();
       speak(`Yes! ${firstCard.label} and ${card.label} are opposites!`, { rate: 0.95, pitch: 1.15 });
       confettiRef.current?.start();
 
@@ -149,6 +150,7 @@ export default function OppositesMatchScreen({ route, navigation }) {
       setSelectedId(null);
       setStreak(0);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      playWrong();
       speak('Try again!', { rate: 0.95, pitch: 1.15 });
       timeoutRef.current = setTimeout(() => {
         if (isMounted.current) setWrongIds([]);
