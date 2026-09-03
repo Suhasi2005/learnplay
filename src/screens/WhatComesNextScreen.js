@@ -6,6 +6,7 @@ import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import BackButton from '../components/BackButton';
 import BouncyButton from '../components/BouncyButton';
+import Mascot from '../components/Mascot';
 import StreakBadge from '../components/StreakBadge';
 import { useSound } from '../context/SoundContext';
 import { TOTAL_ROUNDS, buildRound } from '../patternsData';
@@ -190,6 +191,7 @@ export default function WhatComesNextScreen({ route, navigation }) {
 
       {showCelebration && (
         <View style={styles.celebrationOverlay} pointerEvents="none">
+          <Mascot mood="cheer" size={78} />
           <Animated.Text style={[styles.celebrationEmoji, { transform: [{ scale: popScale }] }]}>{round.correct}</Animated.Text>
           <Text style={styles.celebrationText}>That's the pattern!</Text>
         </View>
@@ -216,7 +218,7 @@ const styles = StyleSheet.create({
   prompt: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.ink, marginTop: spacing.md, marginBottom: spacing.md },
   sequenceRow: {
     flexDirection: 'row', gap: spacing.xs, backgroundColor: colors.white, borderRadius: radius.lg, padding: spacing.sm,
-    marginBottom: spacing.lg, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
+    marginBottom: spacing.lg, shadowColor: colors.ink, shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   tile: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
   tileEmoji: { fontSize: 26 },
@@ -225,7 +227,7 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.md, maxWidth: 340 },
   option: {
     width: 90, height: 90, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
+    shadowColor: colors.ink, shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   optionEmoji: { fontSize: 40 },
   starsRow: { marginTop: spacing.lg },
