@@ -1,93 +1,144 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text } from 'react-native';
+import { Animated, Dimensions, Easing, StyleSheet, Text, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
-import BouncyButton from '../components/BouncyButton';
+import GameButton from '../components/GameButton';
+import Mascot from '../components/Mascot';
+import StarRow from '../components/StarRow';
 import { useSound } from '../context/SoundContext';
 import { clearProgress } from '../storage';
-import { colors, fonts, radius, spacing } from '../theme';
+import { colors, fonts, radius, shadow, skyGradient, spacing, type } from '../theme';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
+// The reward moment.
+//
+// Sequenced rather than simultaneous: the card lands, then Pip cheers, then
+// the stars pop in one at a time. Everything arriving at once reads as a
+// single flash; staggering it makes the stars feel *earned* one by one,
+// which is the entire emotional payload of this screen.
+
+function badgeStars(stars, total) {
+  if (!total) return 0;
+  const pct = stars / total;
+  if (pct >= 1) return 3;
+  if (pct >= 0.8) return 2;
+  if (pct >= 0.6) return 1;
+  return 0;
+}
 
 export default function CompletionScreen({ route, navigation }) {
   const {
     gameId = 'abc',
     stars = 0,
+    total = 0,
     replayScreen = 'AlphabetGame',
     title = 'You did it!',
     subtitle = 'Great job!',
   } = route.params ?? {};
 
   const { speak, playComplete } = useSound();
-  const spin = useRef(new Animated.Value(0)).current;
-  const spinAnim = useRef(null);
+  const enter = useRef(new Animated.Value(0)).current;
+  const glow = useRef(new Animated.Value(0)).current;
+  const earned = badgeStars(stars, total);
 
   useEffect(() => {
     clearProgress(gameId);
     playComplete();
     speak(`${title} ${subtitle}`, { rate: 0.95, pitch: 1.15 });
-    spinAnim.current = Animated.loop(
-      Animated.timing(spin, { toValue: 1, duration: 3000, useNativeDriver: true }),
+
+    const entrance = Animated.spring(enter, {
+      toValue: 1, friction: 7, tension: 70, useNativeDriver: true,
+    });
+    entrance.start();
+
+    const halo = Animated.loop(
+      Animated.sequence([
+        Animated.timing(glow, { toValue: 1, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(glow, { toValue: 0, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      ]),
     );
-    spinAnim.current.start();
-    return () => spinAnim.current?.stop();
+    halo.start();
+
+    return () => { entrance.stop(); halo.stop(); };
   }, []);
 
-  const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  const cardTranslate = enter.interpolate({ inputRange: [0, 1], outputRange: [40, 0] });
+  const haloScale = glow.interpolate({ inputRange: [0, 1], outputRange: [1, 1.12] });
 
   return (
-    <LinearGradient colors={[colors.sun, colors.coral]} style={styles.container}>
+    <LinearGradient colors={skyGradient} style={styles.container}>
       <StatusBar style="light" />
-      <ConfettiCannon count={120} origin={{ x: 0, y: 0 }} fadeOut fallSpeed={3200} />
-      <ConfettiCannon count={120} origin={{ x: 400, y: 0 }} fadeOut fallSpeed={3200} />
+      <ConfettiCannon count={90} origin={{ x: 0, y: 0 }} fadeOut fallSpeed={3200} />
+      <ConfettiCannon count={90} origin={{ x: SCREEN_WIDTH, y: 0 }} fadeOut fallSpeed={3200} />
 
-      <Animated.Text style={[styles.trophy, { transform: [{ rotate }] }]}>🏆</Animated.Text>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.subtitle}>{subtitle}</Text>
+      <Animated.View style={[styles.card, { opacity: enter, transform: [{ translateY: cardTranslate }] }]}>
+        <View style={styles.mascotWrap}>
+          <Animated.View style={[styles.halo, { transform: [{ scale: haloScale }] }]} />
+          <Mascot mood="cheer" size={130} />
+        </View>
 
-      <Text style={styles.starsText}>⭐ {stars} Stars</Text>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.subtitle}>{subtitle}</Text>
 
-      <BouncyButton
-        style={styles.button}
-        onPress={() => navigation.navigate(replayScreen)}
-      >
-        <Text style={styles.buttonText}>Play Again 🔁</Text>
-      </BouncyButton>
-      <BouncyButton
-        style={[styles.button, styles.buttonSecondary]}
-        onPress={() => navigation.navigate('Welcome')}
-      >
-        <Text style={[styles.buttonText, styles.buttonTextSecondary]}>Back Home 🏠</Text>
-      </BouncyButton>
+        <StarRow earned={earned} size={44} animate style={styles.stars} />
+
+        <View style={styles.scorePill}>
+          <Text style={styles.scoreText}>⭐ {stars}{total ? ` / ${total}` : ''} correct</Text>
+        </View>
+      </Animated.View>
+
+      <View style={styles.actions}>
+        <GameButton
+          label="Play again"
+          icon="↻"
+          size="lg"
+          // Replace rather than push, so the reward screen doesn't linger
+          // underneath the replay. topicId is passed explicitly: without it
+          // the game falls back to its own default id, which happens to match
+          // today but would silently write progress to the wrong key the
+          // moment one screen serves two topics.
+          onPress={() => navigation.replace(replayScreen, {
+            startIndex: 0, startStars: 0, topicId: gameId,
+          })}
+          fullWidth
+        />
+        <GameButton
+          label="Back home"
+          icon="🏠"
+          variant="soft"
+          size="md"
+          onPress={() => navigation.navigate('Welcome')}
+          fullWidth
+        />
+      </View>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
-  trophy: { fontSize: 100, marginBottom: spacing.sm },
-  // Same fix as WelcomeScreen: white text measured 1.5-2.7:1 against the
-  // sun/coral gradient (fails WCAG AA). A shadow preserves the celebratory
-  // white-on-bright look while making it actually legible.
-  title: {
-    fontFamily: fonts.displayBold, fontSize: 34, color: colors.white, textAlign: 'center',
-    textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 6,
+  card: {
+    backgroundColor: colors.white, borderRadius: radius.xl,
+    paddingVertical: spacing.lg, paddingHorizontal: spacing.lg,
+    alignItems: 'center', alignSelf: 'stretch', ...shadow.lg,
   },
-  subtitle: {
-    fontFamily: fonts.body, fontSize: 16, color: colors.white, marginTop: spacing.xs, marginBottom: spacing.md, textAlign: 'center',
-    textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4,
+  mascotWrap: { alignItems: 'center', justifyContent: 'center' },
+  // A soft halo behind the character rather than a hard ring — it reads as
+  // glow, and it pulses slowly enough not to compete with the star pops.
+  halo: {
+    position: 'absolute', width: 150, height: 150, borderRadius: 75,
+    backgroundColor: colors.sunSoft,
   },
-  starsText: {
-    fontFamily: fonts.displayBold, fontSize: 26, color: colors.white, marginBottom: spacing.xl,
-    textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4,
+  title: { ...type.title, color: colors.ink, textAlign: 'center', marginTop: spacing.xs },
+  subtitle: { ...type.body, color: colors.muted, textAlign: 'center', marginTop: 2 },
+  stars: { marginTop: spacing.md },
+  scorePill: {
+    marginTop: spacing.md, backgroundColor: colors.grapeSoft,
+    paddingVertical: 8, paddingHorizontal: spacing.md, borderRadius: radius.pill,
   },
-  button: {
-    backgroundColor: colors.white, paddingVertical: spacing.sm, paddingHorizontal: spacing.xl,
-    borderRadius: radius.pill, marginBottom: spacing.sm, minWidth: 220, alignItems: 'center',
-  },
-  buttonText: { fontFamily: fonts.displayBold, fontSize: 18, color: colors.coralDeep },
-  // Kept the translucent look (so it still reads as "secondary" next to the
-  // solid-white primary button) but switched the text to dark ink — white
-  // text here measured the same failing contrast as everywhere else.
-  buttonSecondary: { backgroundColor: 'rgba(255,255,255,0.55)' },
-  buttonTextSecondary: { color: colors.ink },
+  scoreText: { fontFamily: fonts.displayBold, fontSize: 16, color: colors.ink },
+
+  actions: { alignSelf: 'stretch', gap: spacing.sm, marginTop: spacing.lg },
 });
