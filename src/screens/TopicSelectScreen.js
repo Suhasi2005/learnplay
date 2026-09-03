@@ -48,7 +48,12 @@ export default function TopicSelectScreen({ route, navigation }) {
         {topics.map((topic, i) => {
           const palette = cardPalette[(i + 4) % cardPalette.length];
           const progress = topic.playable ? progressByTopic[topic.id] : null;
-          const hasProgress = progress && progress.index > 0;
+          // Bounded by topic.total: a progress record saved at (or past) the
+          // final round — a narrow race if the app closes in the window
+          // between the last correct answer and the completion screen
+          // clearing it — must never produce a "Continue" into an
+          // out-of-range round.
+          const hasProgress = progress && progress.index > 0 && progress.index < topic.total;
 
           return (
             <FadeInCard key={topic.id} index={i}>
@@ -95,9 +100,9 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOpacity: 0.14, shadowRadius: 10, shadowOffset: { width: 0, height: 5 }, elevation: 3,
   },
   cardEmoji: { fontSize: 44, marginBottom: spacing.xs },
-  cardLabel: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.white },
+  cardLabel: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.ink },
   cardLabelDisabled: { color: colors.muted },
-  description: { fontFamily: fonts.body, fontSize: 13, color: colors.white, opacity: 0.9, marginTop: 2 },
+  description: { fontFamily: fonts.body, fontSize: 13, color: colors.ink, opacity: 0.75, marginTop: 2 },
   soon: { fontFamily: fonts.bodyBold, fontSize: 12, color: colors.muted, marginTop: 4 },
   resumeRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
