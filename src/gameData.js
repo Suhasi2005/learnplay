@@ -1,3 +1,5 @@
+import { shuffle } from './utils';
+
 // Each entry: the letter, the word/emoji that's the correct answer, and a
 // pool of "distractor" emoji that never start with that letter. The game
 // screen picks 3 distractors at random from the pool each round, so
@@ -30,15 +32,6 @@ export const ALPHABET = [
   { letter: 'Y', word: 'Yo-yo', emoji: '🪀' },
   { letter: 'Z', word: 'Zebra', emoji: '🦓' },
 ];
-
-function shuffle(array) {
-  const copy = [...array];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
 
 // Builds one round: the correct emoji plus 3 random wrong emoji from the
 // rest of the alphabet, all shuffled into a random position.
