@@ -1,121 +1,208 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useRef } from 'react';
-import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
-import BouncyButton from '../components/BouncyButton';
+import { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import GameButton from '../components/GameButton';
+import Mascot from '../components/Mascot';
+import SceneBackground from '../components/SceneBackground';
+import StarRow from '../components/StarRow';
+import { CURRICULUM } from '../curriculum';
 import { useSound } from '../context/SoundContext';
-import { colors, fonts, radius, spacing } from '../theme';
+import { loadProgress } from '../storage';
+import { colors, fonts, radius, shadow, spacing, subjectTheme, type } from '../theme';
 
-function FloatingEmoji({ emoji, style, duration = 2600, delay = 0, distance = 12 }) {
-  const bob = useRef(new Animated.Value(0)).current;
+// Home.
+//
+// The brief for this screen is that a child should know what to do within a
+// second. So there is exactly one big thing to press. Everything else —
+// the star count, the resume card — is status, deliberately smaller and
+// below it, never competing for the same glance.
 
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(bob, { toValue: 1, duration, delay, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-        Animated.timing(bob, { toValue: 0, duration, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, []);
-
-  const translateY = bob.interpolate({ inputRange: [0, 1], outputRange: [0, -distance] });
-
-  return (
-    <Animated.Text style={[styles.floatingEmoji, style, { transform: [{ translateY }] }]}>
-      {emoji}
-    </Animated.Text>
-  );
-}
+// Every playable topic across the whole curriculum, flattened once.
+const PLAYABLE = Object.entries(CURRICULUM).flatMap(([grade, subjects]) =>
+  Object.entries(subjects).flatMap(([subject, topics]) =>
+    topics.filter((t) => t.playable).map((t) => ({ ...t, grade, subject })),
+  ),
+);
 
 export default function WelcomeScreen({ navigation }) {
   const { soundOn, toggleSound } = useSound();
-  const bob = useRef(new Animated.Value(0)).current;
+  const [totalStars, setTotalStars] = useState(0);
+  const [resume, setResume] = useState(null);
 
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(bob, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-        Animated.timing(bob, { toValue: 0, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, []);
+  // Re-read on focus so finishing a game updates the home screen behind it.
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      Promise.all(PLAYABLE.map((t) => loadProgress(t.id).then((p) => [t, p])))
+        .then((entries) => {
+          if (cancelled) return;
+          const stars = entries.reduce((sum, [, p]) => sum + (p?.stars ?? 0), 0);
+          // Same bound as TopicSelect: a record at or past the final round is
+          // finished, not resumable, and must never be offered as "Continue".
+          const inProgress = entries.find(
+            ([topic, p]) => p && p.index > 0 && p.index < topic.total,
+          );
+          setTotalStars(stars);
+          setResume(inProgress ? { topic: inProgress[0], progress: inProgress[1] } : null);
+        })
+        .catch(() => {});
+      return () => { cancelled = true; };
+    }, []),
+  );
 
-  const translateY = bob.interpolate({ inputRange: [0, 1], outputRange: [0, -14] });
+  const playedCount = PLAYABLE.length;
 
   return (
-    <LinearGradient colors={[colors.sky, colors.skyDeep]} style={styles.container}>
-      <StatusBar style="light" />
+    <SceneBackground>
+      <StatusBar style="dark" />
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <View style={styles.topBar}>
+          <View style={styles.starPill}>
+            <Text style={styles.starPillIcon}>⭐</Text>
+            <Text style={styles.starPillText}>{totalStars}</Text>
+          </View>
 
-      <BouncyButton style={styles.soundToggle} onPress={toggleSound}>
-        <Text style={styles.soundIcon}>{soundOn ? '🔊' : '🔇'}</Text>
-      </BouncyButton>
+          <Pressable
+            onPress={toggleSound}
+            style={styles.soundToggle}
+            accessibilityRole="switch"
+            accessibilityState={{ checked: soundOn }}
+            accessibilityLabel={soundOn ? 'Sound on. Tap to mute.' : 'Sound off. Tap to unmute.'}
+          >
+            <Text style={styles.soundIcon}>{soundOn ? '🔊' : '🔇'}</Text>
+          </Pressable>
+        </View>
 
-      <FloatingEmoji emoji="☁️" style={styles.cloud1} duration={3200} distance={10} />
-      <FloatingEmoji emoji="☁️" style={styles.cloud2} duration={3600} delay={400} distance={8} />
-      <FloatingEmoji emoji="⭐" style={styles.star1} duration={2000} distance={14} />
-      <FloatingEmoji emoji="🌟" style={styles.star2} duration={2400} delay={300} distance={16} />
-      <FloatingEmoji emoji="✨" style={styles.star3} duration={2200} delay={600} distance={12} />
+        <View style={styles.hero}>
+          <Mascot mood="happy" size={150} />
+          <Text style={styles.title}>LearnPlay</Text>
+          <Text style={styles.subtitle}>Play with Pip and learn something new!</Text>
+        </View>
 
-      <Animated.Text style={[styles.mascot, { transform: [{ translateY }] }]}>🦉</Animated.Text>
-      <Text style={styles.title}>LearnPlay</Text>
-      <Text style={styles.subtitle}>Fun games that teach real things!</Text>
+        <GameButton
+          label="PLAY"
+          icon="▶"
+          size="lg"
+          onPress={() => navigation.navigate('GradeSelect')}
+          style={styles.cta}
+        />
 
-      <BouncyButton style={styles.cta} onPress={() => navigation.navigate('GradeSelect')}>
-        <Text style={styles.ctaText}>Let's Play! 🎉</Text>
-      </BouncyButton>
+        {resume && (
+          <Pressable
+            style={styles.resumeCard}
+            onPress={() =>
+              navigation.navigate(resume.topic.playable, {
+                startIndex: resume.progress.index,
+                startStars: resume.progress.stars,
+                topicId: resume.topic.id,
+              })
+            }
+            accessibilityRole="button"
+            accessibilityLabel={`Keep playing ${resume.topic.label}`}
+          >
+            <View
+              style={[
+                styles.resumeIcon,
+                { backgroundColor: subjectTheme[resume.topic.subject]?.soft ?? colors.grapeSoft },
+              ]}
+            >
+              <Text style={styles.resumeEmoji}>{resume.topic.emoji}</Text>
+            </View>
+            <View style={styles.resumeBody}>
+              <Text style={styles.resumeEyebrow}>KEEP GOING</Text>
+              <Text style={styles.resumeTitle} numberOfLines={1}>{resume.topic.label}</Text>
+              <Text style={styles.resumeMeta}>
+                Round {resume.progress.index + 1} of {resume.topic.total}
+              </Text>
+            </View>
+            <Text style={styles.resumeChevron}>›</Text>
+          </Pressable>
+        )}
 
-      <View style={styles.badgeRow}>
-        <Text style={styles.badge}>🔤 English</Text>
-        <Text style={styles.badge}>🔢 Math</Text>
-        <Text style={styles.badge}>🌎 World Around Us</Text>
-      </View>
-    </LinearGradient>
+        <View style={styles.statsRow}>
+          <View style={styles.statCard}>
+            <Text style={styles.statNumber}>{playedCount}</Text>
+            <Text style={styles.statLabel}>games to play</Text>
+          </View>
+          <View style={styles.statCard}>
+            <StarRow earned={Math.min(3, Math.floor(totalStars / 25))} size={20} />
+            <Text style={styles.statLabel}>your badges</Text>
+          </View>
+        </View>
+
+        <View style={styles.subjectRow}>
+          {Object.entries(subjectTheme).map(([id, s]) => (
+            <View key={id} style={[styles.subjectChip, { backgroundColor: s.soft }]}>
+              <Text style={styles.subjectEmoji}>{s.emoji}</Text>
+              <Text style={styles.subjectLabel}>{s.label}</Text>
+            </View>
+          ))}
+        </View>
+
+        <Pressable
+          onPress={() => navigation.navigate('ParentGate')}
+          style={styles.parentLink}
+          accessibilityRole="button"
+        >
+          <Text style={styles.parentLinkText}>For Grown-Ups</Text>
+        </Pressable>
+      </ScrollView>
+    </SceneBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
+  scroll: { paddingHorizontal: spacing.lg, paddingTop: spacing.xl, paddingBottom: spacing.lg, alignItems: 'center' },
+  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignSelf: 'stretch', alignItems: 'center' },
+  starPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    backgroundColor: colors.white, paddingVertical: 7, paddingHorizontal: spacing.sm,
+    borderRadius: radius.pill, ...shadow.sm,
+  },
+  starPillIcon: { fontSize: 15 },
+  starPillText: { fontFamily: fonts.displayBold, fontSize: 16, color: colors.ink },
   soundToggle: {
-    position: 'absolute', top: 14, right: 14, zIndex: 10,
-    width: 44, height: 44, borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.22)', alignItems: 'center', justifyContent: 'center',
+    width: 44, height: 44, borderRadius: 22, backgroundColor: colors.white,
+    alignItems: 'center', justifyContent: 'center', ...shadow.sm,
   },
-  soundIcon: { fontSize: 20 },
-  floatingEmoji: { position: 'absolute', fontSize: 34, opacity: 0.85 },
-  cloud1: { top: '12%', left: '10%', fontSize: 44 },
-  cloud2: { top: '20%', right: '8%', fontSize: 36 },
-  star1: { top: '30%', left: '18%' },
-  star2: { bottom: '28%', right: '14%' },
-  star3: { bottom: '16%', left: '12%' },
-  mascot: { fontSize: 96, marginBottom: spacing.md },
-  // White text measured 1.9-2.6:1 against the sky/skyDeep gradient (WCAG AA
-  // needs 3:1+). A dark shadow keeps the bright hero look while restoring
-  // real legibility, rather than switching to dark text on a "sky" screen.
-  title: {
-    fontFamily: fonts.displayBold, fontSize: 44, color: colors.white, marginBottom: spacing.xs,
-    textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 6,
+  soundIcon: { fontSize: 19 },
+
+  hero: { alignItems: 'center', marginTop: spacing.sm },
+  title: { ...type.hero, color: colors.ink, marginTop: spacing.xs },
+  subtitle: { ...type.body, color: colors.muted, marginTop: 2, textAlign: 'center' },
+
+  cta: { marginTop: spacing.lg, minWidth: 220 },
+
+  resumeCard: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    backgroundColor: colors.white, borderRadius: radius.lg,
+    padding: spacing.sm, marginTop: spacing.lg, alignSelf: 'stretch', ...shadow.md,
   },
-  subtitle: {
-    fontFamily: fonts.body, fontSize: 17, color: colors.white, marginBottom: spacing.xl, textAlign: 'center',
-    textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4,
+  resumeIcon: { width: 52, height: 52, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
+  resumeEmoji: { fontSize: 26 },
+  resumeBody: { flex: 1 },
+  resumeEyebrow: { ...type.eyebrow, color: colors.grapeDeep },
+  resumeTitle: { fontFamily: fonts.displayBold, fontSize: 17, color: colors.ink },
+  resumeMeta: { fontFamily: fonts.body, fontSize: 13, color: colors.muted },
+  resumeChevron: { fontFamily: fonts.displayBold, fontSize: 30, color: colors.lock, marginRight: spacing.xs },
+
+  statsRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md, alignSelf: 'stretch' },
+  statCard: {
+    flex: 1, backgroundColor: colors.white, borderRadius: radius.md,
+    paddingVertical: spacing.sm, alignItems: 'center', gap: 2, ...shadow.sm,
   },
-  cta: {
-    backgroundColor: colors.sun, paddingVertical: spacing.md, paddingHorizontal: spacing.xl,
-    borderRadius: radius.pill, borderWidth: 4, borderColor: colors.white,
-    shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 4,
+  statNumber: { ...type.numeral, color: colors.grapeDeep, includeFontPadding: false },
+  statLabel: { fontFamily: fonts.body, fontSize: 12, color: colors.muted },
+
+  subjectRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.xs, marginTop: spacing.md },
+  subjectChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    paddingVertical: 7, paddingHorizontal: spacing.sm, borderRadius: radius.pill,
   },
-  ctaText: { fontFamily: fonts.displayBold, fontSize: 22, color: colors.ink },
-  badgeRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xl },
-  // This pill's translucent-white fill lightens the effective background
-  // even further, so white text here would be worse than on the gradient
-  // itself — a solid white pill with dark text is both more legible and
-  // more readable as "a chip", the same pattern disabled cards use elsewhere.
-  badge: {
-    fontFamily: fonts.bodyBold, color: colors.ink, backgroundColor: colors.white,
-    paddingVertical: spacing.xs, paddingHorizontal: spacing.sm, borderRadius: radius.pill, fontSize: 13,
-  },
+  subjectEmoji: { fontSize: 14 },
+  subjectLabel: { fontFamily: fonts.bodyBold, fontSize: 12.5, color: colors.ink },
+
+  parentLink: { marginTop: spacing.lg, padding: spacing.sm },
+  parentLinkText: { fontFamily: fonts.bodyBold, fontSize: 13, color: colors.muted, textDecorationLine: 'underline' },
 });
