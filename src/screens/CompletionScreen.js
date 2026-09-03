@@ -64,14 +64,29 @@ export default function CompletionScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
   trophy: { fontSize: 100, marginBottom: spacing.sm },
-  title: { fontFamily: fonts.displayBold, fontSize: 34, color: colors.white, textAlign: 'center' },
-  subtitle: { fontFamily: fonts.body, fontSize: 16, color: colors.white, marginTop: spacing.xs, marginBottom: spacing.md, textAlign: 'center' },
-  starsText: { fontFamily: fonts.displayBold, fontSize: 26, color: colors.white, marginBottom: spacing.xl },
+  // Same fix as WelcomeScreen: white text measured 1.5-2.7:1 against the
+  // sun/coral gradient (fails WCAG AA). A shadow preserves the celebratory
+  // white-on-bright look while making it actually legible.
+  title: {
+    fontFamily: fonts.displayBold, fontSize: 34, color: colors.white, textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 6,
+  },
+  subtitle: {
+    fontFamily: fonts.body, fontSize: 16, color: colors.white, marginTop: spacing.xs, marginBottom: spacing.md, textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4,
+  },
+  starsText: {
+    fontFamily: fonts.displayBold, fontSize: 26, color: colors.white, marginBottom: spacing.xl,
+    textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4,
+  },
   button: {
     backgroundColor: colors.white, paddingVertical: spacing.sm, paddingHorizontal: spacing.xl,
     borderRadius: radius.pill, marginBottom: spacing.sm, minWidth: 220, alignItems: 'center',
   },
   buttonText: { fontFamily: fonts.displayBold, fontSize: 18, color: colors.coralDeep },
-  buttonSecondary: { backgroundColor: 'rgba(255,255,255,0.25)' },
-  buttonTextSecondary: { color: colors.white },
+  // Kept the translucent look (so it still reads as "secondary" next to the
+  // solid-white primary button) but switched the text to dark ink — white
+  // text here measured the same failing contrast as everywhere else.
+  buttonSecondary: { backgroundColor: 'rgba(255,255,255,0.55)' },
+  buttonTextSecondary: { color: colors.ink },
 });
