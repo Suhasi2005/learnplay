@@ -18,6 +18,8 @@ import NumberGameScreen from './src/screens/NumberGameScreen';
 import NumberLineGapScreen from './src/screens/NumberLineGapScreen';
 import OddOneOutScreen from './src/screens/OddOneOutScreen';
 import OppositesMatchScreen from './src/screens/OppositesMatchScreen';
+import ParentAreaScreen from './src/screens/ParentAreaScreen';
+import ParentGateScreen from './src/screens/ParentGateScreen';
 import PointToTheScreen from './src/screens/PointToTheScreen';
 import ReadTheChartScreen from './src/screens/ReadTheChartScreen';
 import ShapeSortScreen from './src/screens/ShapeSortScreen';
@@ -43,8 +45,8 @@ export default function App() {
 
   if (!fontsLoaded) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.sky }}>
-        <ActivityIndicator size="large" color="#fff" />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.cream }}>
+        <ActivityIndicator size="large" color={colors.grape} />
       </View>
     );
   }
@@ -83,6 +85,10 @@ export default function App() {
           <Stack.Screen name="DressForSeason" component={DressForSeasonScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="WhoSaysThat" component={WhoSaysThatScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="Completion" component={CompletionScreen} options={{ animation: 'fade' }} />
+          {/* Grown-up side. Presented modally so it reads as stepping out of
+              the game world rather than deeper into it. */}
+          <Stack.Screen name="ParentGate" component={ParentGateScreen} options={{ animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="ParentArea" component={ParentAreaScreen} options={{ animation: 'slide_from_bottom' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </SoundProvider>
