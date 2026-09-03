@@ -59,7 +59,9 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOpacity: 0.14, shadowRadius: 10, shadowOffset: { width: 0, height: 5 }, elevation: 3,
   },
   cardEmoji: { fontSize: 44, marginBottom: spacing.xs },
-  cardLabel: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.white },
+  // White text on these palette colors measured 1.5-2.7:1 contrast (WCAG AA
+  // needs 3:1 minimum even for large bold text) — ink measures 4.8-8.5:1.
+  cardLabel: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.ink },
   cardLabelDisabled: { color: colors.muted },
   soon: { fontFamily: fonts.bodyBold, fontSize: 12, color: colors.muted, marginTop: 4 },
 });
