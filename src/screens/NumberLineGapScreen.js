@@ -6,6 +6,7 @@ import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import BackButton from '../components/BackButton';
 import BouncyButton from '../components/BouncyButton';
+import Mascot from '../components/Mascot';
 import StreakBadge from '../components/StreakBadge';
 import { useSound } from '../context/SoundContext';
 import { TOTAL_ROUNDS, buildRound } from '../numberLineData';
@@ -181,6 +182,7 @@ export default function NumberLineGapScreen({ route, navigation }) {
 
       {showCelebration && (
         <View style={styles.celebrationOverlay} pointerEvents="none">
+          <Mascot mood="cheer" size={78} />
           <Animated.Text style={[styles.celebrationEmoji, { transform: [{ scale: popScale }] }]}>🔢</Animated.Text>
           <Text style={styles.celebrationText}>{round.correct}!</Text>
         </View>
@@ -200,7 +202,7 @@ const styles = StyleSheet.create({
   prompt: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.ink, marginTop: spacing.md, marginBottom: spacing.lg },
   sequenceRow: {
     flexDirection: 'row', gap: spacing.xs, backgroundColor: colors.white, borderRadius: radius.lg, padding: spacing.sm,
-    marginBottom: spacing.xl, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
+    marginBottom: spacing.xl, shadowColor: colors.ink, shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   tile: { width: 46, height: 46, alignItems: 'center', justifyContent: 'center', borderRadius: radius.sm, backgroundColor: colors.cream },
   gapTile: { backgroundColor: colors.disabled },
@@ -209,7 +211,7 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.md, maxWidth: 340 },
   option: {
     width: 68, height: 68, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
+    shadowColor: colors.ink, shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   optionText: { fontFamily: fonts.displayBold, fontSize: 24, color: colors.ink },
   starsRow: { marginTop: spacing.lg },
