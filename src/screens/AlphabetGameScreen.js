@@ -19,7 +19,7 @@ export default function AlphabetGameScreen({ route, navigation }) {
   const startStars = route.params?.startStars ?? 0;
   const GAME_ID = route.params?.topicId ?? 'jk-en-abc';
 
-  const { speak } = useSound();
+  const { speak, playSuccess, playWrong } = useSound();
   const [index, setIndex] = useState(startIndex);
   const [stars, setStars] = useState(startStars);
   const [streak, setStreak] = useState(0);
@@ -92,6 +92,7 @@ export default function AlphabetGameScreen({ route, navigation }) {
       triggerPop();
       confettiRef.current?.start();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      playSuccess();
       speak(`Yes! ${round.letter} is for ${round.word}!`, { rate: 0.95, pitch: 1.15 });
       saveProgress(GAME_ID, index + 1, newStars);
 
@@ -118,6 +119,7 @@ export default function AlphabetGameScreen({ route, navigation }) {
       setWrongAttempts((n) => n + 1);
       triggerShake();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      playWrong();
       speak('Try again!', { rate: 0.95, pitch: 1.15 });
 
       wrongTimeout.current = setTimeout(() => {
@@ -213,7 +215,7 @@ export default function AlphabetGameScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.cream, padding: spacing.md, alignItems: 'center' },
   progressRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 4, marginTop: spacing.sm, maxWidth: 320 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#E4DED6' },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.disabled },
   dotDone: { backgroundColor: colors.grassDeep },
   dotActive: { backgroundColor: colors.sunDeep, width: 10, height: 10, borderRadius: 5 },
   letterBox: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, marginTop: spacing.lg },
