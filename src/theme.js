@@ -1,4 +1,10 @@
-// LearnPlay design system — "Star Meadow".
+// LearnPlay design system — "Sticker Book".
+//
+// Modelled on the reference set: saturated primaries, thick dark outlines and
+// a hard bottom edge on every surface, so controls read as chunky physical
+// stickers rather than flat rectangles. The earlier pastel palette was pretty
+// but quiet; these hues carry at arm's length on a cheap tablet in daylight,
+// which is where this app actually gets used.
 //
 // One brand hue (grape) carries identity and every primary action. The four
 // accents are assigned by MEANING, not decoration: a subject keeps its colour
@@ -10,11 +16,11 @@
 // the 19 game screens, so changing values (not names) restyles the whole app.
 
 const ramp = {
-  grape: { soft: '#EFE9FF', base: '#7C5CE6', deep: '#5B3FD1' },
-  coral: { soft: '#FFE8E4', base: '#FF7A6B', deep: '#E2543F' },
-  sun: { soft: '#FFF2D4', base: '#FFC23C', deep: '#E09600' },
-  grass: { soft: '#DEF7EC', base: '#45D9A0', deep: '#1FA877' },
-  sky: { soft: '#E2F1FD', base: '#5BB8F5', deep: '#2589D6' },
+  grape: { soft: '#EDE6FF', base: '#7B4FE0', deep: '#5326B8' },
+  coral: { soft: '#FFE3DE', base: '#FF6B5A', deep: '#D63B29' },
+  sun: { soft: '#FFF0C9', base: '#FFC42B', deep: '#D18E00' },
+  grass: { soft: '#D8F7DF', base: '#3FCE6E', deep: '#1E9B4A' },
+  sky: { soft: '#DCF0FE', base: '#33B5F5', deep: '#0A7CBF' },
 };
 
 export const colors = {
@@ -46,9 +52,15 @@ export const colors = {
   muted: '#67627E',
   cream: '#FFF9F0',
   white: '#FFFFFF',
-  border: '#EBE4F5',
-  disabled: '#E4DFEE',
-  lock: '#B9B2CE',
+  border: '#E7DFF2',
+  disabled: '#E2DCEC',
+  lock: '#B0A8C6',
+
+  // The outline that makes a surface read as a sticker. Every card, button and
+  // badge is drawn with it, which is what holds a saturated palette together —
+  // without a shared outline, five bright fills next to each other just look
+  // noisy. Slightly softer than `ink` so it frames rather than cages.
+  outline: '#3B3560',
 };
 
 // Subject identity, keyed by the curriculum's subject ID (not its display
@@ -74,17 +86,28 @@ export const cardPalette = [
   { bg: colors.sky, deep: colors.skyDeep, soft: colors.skySoft },
 ];
 
-// Lavender drifting into warm cream — a sky that belongs to a meadow world,
-// and light enough that dark text stays readable anywhere on top of it.
-export const bgGradient = ['#F4EEFF', '#FFF6EC'];
+// A warm paper ground for the stickers to sit on. Deliberately low-chroma:
+// the saturated cards carry the colour, and a busy backdrop under them turns
+// the screen to mush.
+export const bgGradient = ['#FFF6E4', '#FFEFDA'];
 // Hero gradient for full-bleed screens that carry white text. Both endpoints
-// clear 4.5:1 against white (5.85:1 and 4.66:1), so the title stays legible
-// across the whole sweep without leaning on a text shadow to rescue it.
-export const skyGradient = ['#6A4BD6', '#2478BE'];
-export const sunsetGradient = ['#E2543F', '#E09600'];
+// clear 4.5:1 against white, so the title stays legible across the whole
+// sweep without leaning on a text shadow to rescue it.
+// #1E7FC4 was the first pick for the blue end but measured 4.30:1 against
+// white — just under the AA floor. This is 4.85:1.
+export const skyGradient = ['#6231C9', '#1B76B8'];
+export const sunsetGradient = ['#D63B29', '#D18E00'];
 
 export const spacing = { xs: 6, sm: 12, md: 20, lg: 28, xl: 40, xxl: 56 };
 export const radius = { sm: 12, md: 20, lg: 28, xl: 36, pill: 999 };
+
+// The sticker outline, applied as a real border. 3px reads as deliberate at
+// phone density; 2px disappears and 4px starts to look like a colouring book.
+export const OUTLINE_WIDTH = 3;
+export const outlined = {
+  borderWidth: OUTLINE_WIDTH,
+  borderColor: colors.outline,
+};
 
 export const fonts = {
   display: 'Fredoka_600SemiBold',
@@ -126,3 +149,29 @@ export const shadow = {
 // exposes this much of its darker base; pressing hides it, so the control
 // physically compresses instead of just changing colour.
 export const PRESS_DEPTH = 6;
+
+// Derives the shadow-side colour sitting under a tactile surface.
+//
+// Every card in the app gets its base shade from this rather than from a
+// hand-picked pair, so a card tinted with any colour — including one a game
+// computes at runtime — still gets a correct, consistent base. Mixing toward
+// the ink hue rather than toward black keeps the darker edge in the same
+// colour world as the rest of the palette; pure black bases look muddy
+// against warm fills.
+const INK_RGB = [46, 42, 74];
+
+export function shade(color, amount = 0.26) {
+  if (typeof color !== 'string') return colors.border;
+  let hex = color.trim();
+  if (hex[0] !== '#') return colors.border;
+  hex = hex.slice(1);
+  if (hex.length === 3) hex = hex.split('').map((c) => c + c).join('');
+  if (hex.length !== 6) return colors.border;
+
+  const n = parseInt(hex, 16);
+  if (Number.isNaN(n)) return colors.border;
+
+  const rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  const mixed = rgb.map((c, i) => Math.round(c + (INK_RGB[i] - c) * amount));
+  return '#' + mixed.map((c) => c.toString(16).padStart(2, '0')).join('');
+}
