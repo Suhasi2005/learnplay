@@ -1,14 +1,14 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef } from 'react';
 import { Animated, Dimensions, Easing, StyleSheet, Text, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import { GroundedCharacter } from '../components/Character';
 import GameButton from '../components/GameButton';
-import Mascot from '../components/Mascot';
+import ParallaxWorld from '../components/ParallaxWorld';
 import StarRow from '../components/StarRow';
 import { useSound } from '../context/SoundContext';
 import { clearProgress } from '../storage';
-import { colors, fonts, radius, shadow, skyGradient, spacing, type } from '../theme';
+import { OUTLINE_WIDTH, colors, fonts, radius, shadow, spacing, type } from '../theme';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -68,7 +68,7 @@ export default function CompletionScreen({ route, navigation }) {
   const haloScale = glow.interpolate({ inputRange: [0, 1], outputRange: [1, 1.12] });
 
   return (
-    <LinearGradient colors={skyGradient} style={styles.container}>
+    <ParallaxWorld scene="meadow" scrimBoost={0.12} style={styles.container}>
       <StatusBar style="light" />
       <ConfettiCannon count={90} origin={{ x: 0, y: 0 }} fadeOut fallSpeed={3200} />
       <ConfettiCannon count={90} origin={{ x: SCREEN_WIDTH, y: 0 }} fadeOut fallSpeed={3200} />
@@ -76,7 +76,7 @@ export default function CompletionScreen({ route, navigation }) {
       <Animated.View style={[styles.card, { opacity: enter, transform: [{ translateY: cardTranslate }] }]}>
         <View style={styles.mascotWrap}>
           <Animated.View style={[styles.halo, { transform: [{ scale: haloScale }] }]} />
-          <Mascot mood="cheer" size={130} />
+          <GroundedCharacter mood="cheer" size={120} shadow={false} />
         </View>
 
         <Text style={styles.title}>{title}</Text>
@@ -113,7 +113,7 @@ export default function CompletionScreen({ route, navigation }) {
           fullWidth
         />
       </View>
-    </LinearGradient>
+    </ParallaxWorld>
   );
 }
 
@@ -122,7 +122,9 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.white, borderRadius: radius.xl,
     paddingVertical: spacing.lg, paddingHorizontal: spacing.lg,
-    alignItems: 'center', alignSelf: 'stretch', ...shadow.lg,
+    alignItems: 'center', alignSelf: 'stretch',
+    borderWidth: OUTLINE_WIDTH, borderColor: colors.outline,
+    ...shadow.lg,
   },
   mascotWrap: { alignItems: 'center', justifyContent: 'center' },
   // A soft halo behind the character rather than a hard ring — it reads as
