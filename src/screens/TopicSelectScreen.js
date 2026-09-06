@@ -3,11 +3,12 @@ import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 import LevelPath from '../components/LevelPath';
-import SceneBackground from '../components/SceneBackground';
+import ParallaxWorld from '../components/ParallaxWorld';
 import ScreenHeader from '../components/ScreenHeader';
 import StarRow from '../components/StarRow';
 import { CURRICULUM } from '../curriculum';
 import { clearProgress, loadProgress } from '../storage';
+import { sceneForSubject } from '../sceneAssets';
 import { OUTLINE_WIDTH, colors, fonts, radius, spacing } from '../theme';
 import { subjectTheme } from '../theme';
 
@@ -85,7 +86,7 @@ export default function TopicSelectScreen({ route, navigation }) {
   });
 
   return (
-    <SceneBackground>
+    <ParallaxWorld scene={sceneForSubject(subject)}>
       <StatusBar style="light" />
       <ScreenHeader
         title={theme.label}
@@ -135,7 +136,7 @@ export default function TopicSelectScreen({ route, navigation }) {
           </View>
         </View>
       </ScrollView>
-    </SceneBackground>
+    </ParallaxWorld>
   );
 }
 
