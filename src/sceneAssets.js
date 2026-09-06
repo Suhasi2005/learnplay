@@ -98,6 +98,10 @@ export const SCENES = {
       { key: 'bush', image: FOLIAGE.bush1, x: 0.36, bottom: 0.18, size: 0.13, depth: 0.9 },
       { key: 'sun', image: SKY_ELEMENTS.sun, x: 0.78, bottom: 0.84, size: 0.16, depth: 0.05 },
     ],
+    ambient: [
+      { key: 'rabbit', image: ANIMALS.rabbit, x: 0.22, bottom: 0.19, size: 0.1, hop: 9, period: 1500 },
+      { key: 'chick', image: ANIMALS.chick, x: 0.63, bottom: 0.185, size: 0.075, hop: 6, period: 1150 },
+    ],
   },
 
   forest: {
@@ -115,6 +119,11 @@ export const SCENES = {
       { key: 'tree-m', image: FOLIAGE.tree, x: 0.55, bottom: 0.24, size: 0.2, depth: 0.7 },
       { key: 'bush', image: FOLIAGE.bush2, x: 0.3, bottom: 0.18, size: 0.12, depth: 0.92 },
     ],
+    ambient: [
+      { key: 'owl', image: ANIMALS.owl, x: 0.1, bottom: 0.42, size: 0.085, hop: 4, period: 2100 },
+      { key: 'bear', image: ANIMALS.bear, x: 0.66, bottom: 0.185, size: 0.11, hop: 5, period: 1800 },
+      { key: 'frog', image: ANIMALS.frog, x: 0.4, bottom: 0.175, size: 0.07, hop: 11, period: 1000 },
+    ],
   },
 
   autumn: {
@@ -130,6 +139,11 @@ export const SCENES = {
       { key: 'tree', image: FOLIAGE.treeSmall2, x: 0.12, bottom: 0.21, size: 0.22, depth: 0.85 },
       { key: 'fence', image: PROPS.fence, x: 0.38, bottom: 0.18, size: 0.18, depth: 0.95 },
     ],
+    ambient: [
+      { key: 'cow', image: ANIMALS.cow, x: 0.2, bottom: 0.185, size: 0.115, hop: 4, period: 2000 },
+      { key: 'chicken', image: ANIMALS.chicken, x: 0.52, bottom: 0.18, size: 0.075, hop: 7, period: 1250 },
+      { key: 'goat', image: ANIMALS.goat, x: 0.85, bottom: 0.185, size: 0.09, hop: 5, period: 1650 },
+    ],
   },
 
   desert: {
@@ -144,6 +158,10 @@ export const SCENES = {
       { key: 'palm', image: FOLIAGE.treePalm, x: 0.08, bottom: 0.2, size: 0.28, depth: 0.86 },
       { key: 'tower', image: PROPS.tower, x: 0.74, bottom: 0.22, size: 0.22, depth: 0.7 },
       { key: 'sun', image: SKY_ELEMENTS.sun, x: 0.2, bottom: 0.84, size: 0.14, depth: 0.05 },
+    ],
+    ambient: [
+      { key: 'snake', image: ANIMALS.snake, x: 0.3, bottom: 0.175, size: 0.085, hop: 3, period: 2300 },
+      { key: 'parrot', image: ANIMALS.parrot, x: 0.6, bottom: 0.36, size: 0.075, hop: 10, period: 1400 },
     ],
   },
 };
