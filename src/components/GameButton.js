@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import { useRef } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
-import { PRESS_DEPTH, colors, fonts, radius, shadow, spacing } from '../theme';
+import { OUTLINE_WIDTH, PRESS_DEPTH, colors, fonts, radius, shadow, spacing } from '../theme';
 
 // The app's primary control.
 //
@@ -94,6 +94,7 @@ export default function GameButton({
           styles.base,
           { backgroundColor: baseColor, height: dims.height + PRESS_DEPTH },
           !isGhost && !disabled && shadow.sm,
+          isGhost && styles.ghostFlat,
         ]}
       >
         <Animated.View
@@ -105,7 +106,7 @@ export default function GameButton({
               paddingHorizontal: dims.paddingHorizontal,
               transform: [{ translateY }],
             },
-            isSoft && styles.softFace,
+            isGhost && styles.ghostFlat,
           ]}
         >
           {icon ? <Text style={[styles.icon, { fontSize: dims.iconSize }]}>{icon}</Text> : null}
@@ -125,15 +126,25 @@ export default function GameButton({
 
 const styles = StyleSheet.create({
   fullWidth: { alignSelf: 'stretch' },
-  base: { borderRadius: radius.pill, justifyContent: 'flex-start' },
+  base: {
+    borderRadius: radius.pill,
+    justifyContent: 'flex-start',
+    // Outline on three sides only — the top edge sits behind the face at rest
+    // and under it when pressed, so it could only ever show as a seam.
+    borderWidth: OUTLINE_WIDTH,
+    borderTopWidth: 0,
+    borderColor: colors.outline,
+  },
   face: {
     borderRadius: radius.pill,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.xs,
+    borderWidth: OUTLINE_WIDTH,
+    borderColor: colors.outline,
   },
-  softFace: { borderWidth: 2, borderColor: colors.border },
+  ghostFlat: { borderWidth: 0 },
   icon: { includeFontPadding: false },
   label: { fontFamily: fonts.displayBold, includeFontPadding: false },
 });
