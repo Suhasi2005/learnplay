@@ -16,6 +16,51 @@ import { sceneFor } from '../sceneAssets';
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const SWAY = 16; // px of travel at depth 1
 
+// A creature living in the scene.
+//
+// Each one owns its animation with its own period, so they never bob in
+// unison — synchronised movement reads as a screensaver, staggered movement
+// reads as a place with things living in it. They're decoration and are not
+// tappable: a child who taps a rabbit and gets nothing learns the screen
+// lies, so ambient life stays visibly separate from the interactive layer.
+function AmbientCreature({ item }) {
+  const hop = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(hop, {
+          toValue: 1, duration: item.period, easing: Easing.inOut(Easing.quad), useNativeDriver: true,
+        }),
+        Animated.timing(hop, {
+          toValue: 0, duration: item.period, easing: Easing.inOut(Easing.quad), useNativeDriver: true,
+        }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, []);
+
+  const translateY = hop.interpolate({ inputRange: [0, 1], outputRange: [0, -item.hop] });
+  const size = item.size * SCREEN_W;
+
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={{
+        position: 'absolute',
+        left: item.x * SCREEN_W,
+        bottom: item.bottom * SCREEN_H,
+        width: size,
+        height: size,
+        transform: [{ translateY }],
+      }}
+    >
+      <Image source={item.image} style={styles.propImage} resizeMode="contain" />
+    </Animated.View>
+  );
+}
+
 export default function ParallaxWorld({
   scene = 'meadow',
   children,
@@ -96,6 +141,10 @@ export default function ParallaxWorld({
           <Image source={p.image} style={styles.propImage} resizeMode="contain" />
         </Animated.View>
       ))}
+
+      {/* Ambient life, in front of the scenery but behind the scrim, so the
+          creatures sit in the world rather than on top of the interface. */}
+      {animate && s.ambient?.map((a) => <AmbientCreature key={a.key} item={a} />)}
 
       {/* Contrast guarantee. The art is fixed but the UI on top varies, so a
           screen can ask for extra protection without editing the scene. */}
