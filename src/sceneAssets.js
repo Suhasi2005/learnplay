@@ -148,8 +148,20 @@ export const SCENES = {
   },
 };
 
+// Each subject gets its own place, and keeps it. A child who has played
+// English three times should recognise the forest before reading the title.
+export const SCENE_BY_SUBJECT = {
+  English: 'forest',
+  Math: 'desert',
+  EVS: 'meadow',
+};
+
 export function sceneFor(key) {
   return SCENES[key] ?? SCENES.meadow;
+}
+
+export function sceneForSubject(subject) {
+  return SCENE_BY_SUBJECT[subject] ?? 'meadow';
 }
 
 export function animalFor(key) {
