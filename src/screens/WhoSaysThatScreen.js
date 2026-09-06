@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Animated, Dimensions, Image, StyleSheet, Text, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import BackButton from '../components/BackButton';
 import BouncyButton from '../components/BouncyButton';
@@ -139,7 +139,7 @@ export default function WhoSaysThatScreen({ route, navigation }) {
           return (
             <Animated.View key={option.id} style={isWrong ? { transform: [{ translateX: shakeTranslate }] } : undefined}>
               <BouncyButton style={[styles.option, { backgroundColor: palette.bg }]} onPress={() => handleAnswer(option)} accessibilityLabel={option.label}>
-                <Text style={styles.optionEmoji}>{option.emoji}</Text>
+                <Image source={option.sprite} style={styles.optionSprite} resizeMode="contain" />
               </BouncyButton>
             </Animated.View>
           );
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     width: 90, height: 90, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center',
     shadowColor: colors.ink, shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
-  optionEmoji: { fontSize: 40 },
+  optionSprite: { width: '78%', height: '78%' },
   starsRow: { marginTop: spacing.lg, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.white, paddingVertical: 7, paddingHorizontal: spacing.md, borderRadius: radius.pill, borderBottomWidth: 3, borderBottomColor: colors.disabled },
   starsText: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.ink },
   celebrationOverlay: {
