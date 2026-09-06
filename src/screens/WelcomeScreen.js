@@ -4,7 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { GroundedCharacter } from '../components/Character';
 import GameButton from '../components/GameButton';
-import WorldScene from '../components/WorldScene';
+import ParallaxWorld from '../components/ParallaxWorld';
 import { CURRICULUM } from '../curriculum';
 import { useSound } from '../context/SoundContext';
 import { loadProgress } from '../storage';
@@ -47,7 +47,7 @@ export default function WelcomeScreen({ navigation }) {
   );
 
   return (
-    <WorldScene world="home">
+    <ParallaxWorld scene="meadow">
       <StatusBar style="light" />
 
       <View style={styles.topBar}>
@@ -121,7 +121,7 @@ export default function WelcomeScreen({ navigation }) {
           </Pressable>
         </View>
       </View>
-    </WorldScene>
+    </ParallaxWorld>
   );
 }
 
