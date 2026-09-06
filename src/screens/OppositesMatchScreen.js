@@ -203,6 +203,6 @@ const styles = StyleSheet.create({
   cardSelected: { borderColor: colors.grapeDeep, borderWidth: 3, backgroundColor: colors.grape + '22' },
   cardEmoji: { fontSize: 32 },
   cardLabel: { fontFamily: fonts.bodyBold, fontSize: 12, color: colors.ink, marginTop: 2 },
-  starsRow: { marginTop: spacing.lg },
-  starsText: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.sunDeep },
+  starsRow: { marginTop: spacing.lg, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.white, paddingVertical: 7, paddingHorizontal: spacing.md, borderRadius: radius.pill, borderBottomWidth: 3, borderBottomColor: colors.disabled },
+  starsText: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.ink },
 });
