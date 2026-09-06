@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import BouncyButton from './BouncyButton';
-import { OUTLINE_WIDTH, colors, fonts, shade, spacing } from '../theme';
+import { colors, fonts, shade, spacing } from '../theme';
 
 // The winding level trail.
 //
@@ -110,14 +110,16 @@ const styles = StyleSheet.create({
   caption: {
     fontFamily: fonts.displayBold,
     fontSize: 11.5,
-    color: colors.ink,
+    // White on a dark shadow rather than dark on a light halo: the trail now
+    // runs over scenery, and light-on-dark survives an arbitrary background
+    // far better than the reverse.
+    color: colors.white,
     textAlign: 'center',
     marginTop: 4,
     width: NODE + 44,
     marginLeft: -22,
-    // A hairline light halo keeps captions legible where they cross the trail.
-    textShadowColor: colors.white,
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: OUTLINE_WIDTH,
+    textShadowColor: 'rgba(14,12,30,0.9)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
 });
