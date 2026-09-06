@@ -6,7 +6,7 @@ import BackButton from '../components/BackButton';
 import FadeInCard from '../components/FadeInCard';
 import { MascotBadge } from '../components/Mascot';
 import ProgressRing, { RingLabel } from '../components/ProgressRing';
-import SceneBackground from '../components/SceneBackground';
+import ParallaxWorld from '../components/ParallaxWorld';
 import { CURRICULUM, isSubjectAvailable } from '../curriculum';
 import { loadProgress } from '../storage';
 import { colors, fonts, radius, shadow, spacing, subjectTheme, type } from '../theme';
@@ -36,8 +36,8 @@ export default function SubjectSelectScreen({ route, navigation }) {
   );
 
   return (
-    <SceneBackground>
-      <StatusBar style="dark" />
+    <ParallaxWorld scene="autumn">
+      <StatusBar style="light" />
       <BackButton onPress={() => navigation.goBack()} />
 
       <View style={styles.header}>
@@ -101,18 +101,18 @@ export default function SubjectSelectScreen({ route, navigation }) {
           );
         })}
       </View>
-    </SceneBackground>
+    </ParallaxWorld>
   );
 }
 
 const styles = StyleSheet.create({
   header: { paddingHorizontal: spacing.lg, marginTop: spacing.xl },
-  eyebrow: { ...type.eyebrow, color: colors.grapeDeep },
-  title: { ...type.title, color: colors.ink, marginTop: 2 },
+  eyebrow: { ...type.eyebrow, color: colors.sun, textShadowColor: 'rgba(14,12,30,0.85)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
+  title: { ...type.title, color: colors.white, marginTop: 2, textShadowColor: 'rgba(14,12,30,0.85)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 5 },
 
   pipRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginTop: spacing.sm },
   speech: {
-    backgroundColor: colors.white, borderRadius: radius.pill,
+    backgroundColor: colors.white, borderRadius: radius.pill, borderWidth: 3, borderColor: colors.outline,
     paddingVertical: 7, paddingHorizontal: spacing.sm, ...shadow.sm,
   },
   speechText: { fontFamily: fonts.body, fontSize: 13.5, color: colors.ink },
