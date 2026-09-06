@@ -181,8 +181,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: spacing.md, alignItems: 'center' },
   progressRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 4, marginTop: spacing.sm, maxWidth: 260 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.disabled },
-  dotDone: { backgroundColor: colors.grassDeep },
-  dotActive: { backgroundColor: colors.sunDeep, width: 10, height: 10, borderRadius: 5 },
+  dotDone: { backgroundColor: colors.grass },
+  dotActive: { backgroundColor: colors.sun, width: 12, height: 12, borderRadius: 6, borderWidth: 2, borderColor: colors.white },
   prompt: { fontFamily: fonts.displayBold, fontSize: 18, color: colors.ink, marginTop: spacing.lg, marginBottom: spacing.lg, textAlign: 'center' },
   compareRow: { flexDirection: 'row', gap: spacing.lg },
   compareBox: {
@@ -191,8 +191,8 @@ const styles = StyleSheet.create({
     shadowColor: colors.ink, shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 2,
   },
   compareEmoji: { textAlign: 'center' },
-  starsRow: { marginTop: spacing.xl },
-  starsText: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.sunDeep },
+  starsRow: { marginTop: spacing.xl, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.white, paddingVertical: 7, paddingHorizontal: spacing.md, borderRadius: radius.pill, borderBottomWidth: 3, borderBottomColor: colors.disabled },
+  starsText: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.ink },
   celebrationOverlay: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     backgroundColor: 'rgba(255,255,255,0.85)', alignItems: 'center', justifyContent: 'center',
