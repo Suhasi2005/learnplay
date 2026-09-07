@@ -1,10 +1,17 @@
 import { Baloo2_500Medium, Baloo2_700Bold } from '@expo-google-fonts/baloo-2';
 import { Fredoka_600SemiBold, Fredoka_700Bold } from '@expo-google-fonts/fredoka';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
 import { ActivityIndicator, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import FloatingNav from './src/components/FloatingNav';
 import { SoundProvider } from './src/context/SoundContext';
+import { ActivitiesScreen, StoriesScreen } from './src/screens/shell/ComingSoonScreen';
+import DiscoverScreen from './src/screens/shell/DiscoverScreen';
+import GamesScreen from './src/screens/shell/GamesScreen';
+import LessonsScreen from './src/screens/shell/LessonsScreen';
 import AddItUpScreen from './src/screens/AddItUpScreen';
 import AlphabetGameScreen from './src/screens/AlphabetGameScreen';
 import BiggerOrSmallerScreen from './src/screens/BiggerOrSmallerScreen';
@@ -34,6 +41,26 @@ import WhoUsesThisScreen from './src/screens/WhoUsesThisScreen';
 import { colors } from './src/theme';
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+// The browsing shell. Five tabs, and three of them lead somewhere real:
+// Lessons is the curriculum path, Games is every playable topic in one list,
+// Discover suggests one. Stories and Activities are honest placeholders rather
+// than dummy content that breaks the moment a child taps it.
+function ShellTabs() {
+  return (
+    <Tab.Navigator
+      tabBar={(props) => <FloatingNav {...props} />}
+      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' } }}
+    >
+      <Tab.Screen name="Lessons" component={LessonsScreen} options={{ title: 'Home', tabBarIcon: '🏠' }} />
+      <Tab.Screen name="Games" component={GamesScreen} options={{ title: 'Games', tabBarIcon: '🎮' }} />
+      <Tab.Screen name="Stories" component={StoriesScreen} options={{ title: 'Stories', tabBarIcon: '📖' }} />
+      <Tab.Screen name="Activities" component={ActivitiesScreen} options={{ title: 'Activities', tabBarIcon: '🎨' }} />
+      <Tab.Screen name="Discover" component={DiscoverScreen} options={{ title: 'Discover', tabBarIcon: '🧭' }} />
+    </Tab.Navigator>
+  );
+}
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -52,8 +79,9 @@ export default function App() {
   }
 
   return (
-    <SoundProvider>
-      <NavigationContainer>
+    <SafeAreaProvider>
+      <SoundProvider>
+        <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
             headerShown: false,
@@ -61,7 +89,9 @@ export default function App() {
             animationDuration: 220,
           }}
         >
+          {/* Welcome is the door; Shell is the app behind it. */}
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
+          <Stack.Screen name="Shell" component={ShellTabs} />
           <Stack.Screen name="GradeSelect" component={GradeSelectScreen} options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="SubjectSelect" component={SubjectSelectScreen} options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="TopicSelect" component={TopicSelectScreen} options={{ animation: 'slide_from_right' }} />
@@ -89,8 +119,9 @@ export default function App() {
               the game world rather than deeper into it. */}
           <Stack.Screen name="ParentGate" component={ParentGateScreen} options={{ animation: 'slide_from_bottom' }} />
           <Stack.Screen name="ParentArea" component={ParentAreaScreen} options={{ animation: 'slide_from_bottom' }} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SoundProvider>
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SoundProvider>
+    </SafeAreaProvider>
   );
 }
