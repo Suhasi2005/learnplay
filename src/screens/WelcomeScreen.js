@@ -108,7 +108,7 @@ export default function WelcomeScreen({ navigation }) {
             label="Let's Explore!"
             icon="▶"
             size="lg"
-            onPress={() => navigation.navigate('GradeSelect')}
+            onPress={() => navigation.navigate('Shell')}
             fullWidth
           />
 
