@@ -150,6 +150,84 @@ export const shadow = {
 // physically compresses instead of just changing colour.
 export const PRESS_DEPTH = 6;
 
+// ---------------------------------------------------------------------------
+// SHELL — the app around the games.
+//
+// A deliberate second register. The shell is where a child browses and a
+// parent looks over their shoulder: calm, light, unhurried. The games keep
+// the saturated sticker palette above, because that's where the noise belongs.
+//
+// This is a separate token set rather than a replacement so the two can't
+// bleed into each other: a game screen importing `colors` cannot accidentally
+// go pastel, and a shell screen importing `shell` cannot go loud.
+export const shell = {
+  // Grounds
+  bg: '#F4F1FB',
+  bgDeep: '#EBE5F7',
+  surface: '#FFFFFF',
+  // Tinted card fills, alternated so a list of cards has rhythm.
+  tintLavender: '#EDE7FA',
+  tintPeach: '#FCEDE4',
+  tintMint: '#E4F5EE',
+
+  // Brand
+  primary: '#7B5CE6',
+  primaryDeep: '#5F3FCB',
+  primarySoft: '#E9E2FB',
+
+  // The warm counterweight. Every primary call-to-action is peach, which is
+  // what stops a violet app reading as cold.
+  //
+  // Peach ALWAYS takes ink text, never white: white on it measures 2.05:1,
+  // far under the 4.5:1 floor, while ink measures 8.15:1. This is the one
+  // rule of this palette that's easy to break by habit — a filled button
+  // "wants" white text — so it's written down rather than remembered.
+  accent: '#F0A473',
+  accentDeep: '#D68252',
+  accentSoft: '#FCEDE4',
+  onAccent: '#1E1B33',
+
+  // Ink. Near-black with a violet cast so it belongs to the same family as
+  // the brand rather than sitting on top of it as neutral grey.
+  ink: '#1E1B33',
+  inkMuted: '#615C7A',
+  line: '#E6E0F2',
+  // Darkened from #A9A2BF, which measured 2.19:1 on the lavender ground —
+  // under the 3:1 floor for meaningful non-text UI, so lock icons and
+  // disabled states were fading into the background.
+  lock: '#8F87A9',
+  white: '#FFFFFF',
+};
+
+// Softer and larger than the game radii — the shell is rounded rectangles and
+// pills, not stickers.
+export const shellRadius = { sm: 14, md: 20, lg: 26, xl: 32, pill: 999 };
+
+// Shadows here are wide and faint. A hard sticker edge would fight the calm.
+export const shellShadow = {
+  card: {
+    shadowColor: '#2A2145', shadowOpacity: 0.07, shadowRadius: 18,
+    shadowOffset: { width: 0, height: 8 }, elevation: 3,
+  },
+  raised: {
+    shadowColor: '#2A2145', shadowOpacity: 0.12, shadowRadius: 26,
+    shadowOffset: { width: 0, height: 12 }, elevation: 7,
+  },
+  nav: {
+    shadowColor: '#1E1B33', shadowOpacity: 0.28, shadowRadius: 22,
+    shadowOffset: { width: 0, height: 10 }, elevation: 12,
+  },
+};
+
+export const shellType = {
+  display: { fontFamily: fonts.displayBold, fontSize: 30, lineHeight: 36 },
+  title: { fontFamily: fonts.displayBold, fontSize: 22, lineHeight: 27 },
+  cardTitle: { fontFamily: fonts.displayBold, fontSize: 16.5, lineHeight: 21 },
+  body: { fontFamily: fonts.body, fontSize: 13.5, lineHeight: 18.5 },
+  small: { fontFamily: fonts.body, fontSize: 11.5, lineHeight: 15 },
+  label: { fontFamily: fonts.bodyBold, fontSize: 12.5 },
+};
+
 // Derives the shadow-side colour sitting under a tactile surface.
 //
 // Every card in the app gets its base shade from this rather than from a
