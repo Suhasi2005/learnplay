@@ -109,7 +109,7 @@ export default function CompletionScreen({ route, navigation }) {
           icon="🏠"
           variant="soft"
           size="md"
-          onPress={() => navigation.navigate('Welcome')}
+          onPress={() => navigation.navigate('Shell')}
           fullWidth
         />
       </View>
