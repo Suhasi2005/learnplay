@@ -12,6 +12,7 @@ import { ActivitiesScreen, StoriesScreen } from './src/screens/shell/ComingSoonS
 import DiscoverScreen from './src/screens/shell/DiscoverScreen';
 import GamesScreen from './src/screens/shell/GamesScreen';
 import LessonsScreen from './src/screens/shell/LessonsScreen';
+import MiaScreen from './src/screens/shell/MiaScreen';
 import AddItUpScreen from './src/screens/AddItUpScreen';
 import AlphabetGameScreen from './src/screens/AlphabetGameScreen';
 import BiggerOrSmallerScreen from './src/screens/BiggerOrSmallerScreen';
@@ -92,6 +93,7 @@ export default function App() {
           {/* Welcome is the door; Shell is the app behind it. */}
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Shell" component={ShellTabs} />
+          <Stack.Screen name="Mia" component={MiaScreen} options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="GradeSelect" component={GradeSelectScreen} options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="SubjectSelect" component={SubjectSelectScreen} options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="TopicSelect" component={TopicSelectScreen} options={{ animation: 'slide_from_right' }} />
