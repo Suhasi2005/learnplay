@@ -64,7 +64,7 @@ export default function MiaScreen() {
             Pose: <Text style={styles.noteStrong}>{mood}</Text>
             {Platform.OS === 'web'
               ? '\nWeb build — showing the 2D character. The 3D model runs on phone and tablet.'
-              : '\nThe bundled model has no skeleton, so Mia moves as one piece: she breathes, bounces and leans, but cannot raise an arm. Swap in a rigged export and these buttons drive real skeletal clips instead.'}
+              : '\nRigged model: 160 joints driving three baked clips. Idle loops; Wave and Point play once and crossfade back.'}
           </Text>
         </View>
       </ScrollView>
