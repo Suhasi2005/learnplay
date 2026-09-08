@@ -131,6 +131,17 @@ export default function LessonsScreen({ navigation }) {
 
         <View style={styles.block}>
           <ContentCard
+            icon="✨"
+            title="Meet Mia"
+            tint={shell.accentSoft}
+            body="Say hello to your 3D friend. Tap a button and watch her react."
+            onPress={() => navigation.navigate('Mia')}
+            art={<Character mood="happy" size={72} animate={false} />}
+          />
+        </View>
+
+        <View style={styles.block}>
+          <ContentCard
             icon="📚"
             title="Lessons"
             tint={shell.tintLavender}
