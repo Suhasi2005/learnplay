@@ -1,0 +1,106 @@
+// Little Learners art manifest.
+//
+// Metro resolves require() at build time, so every path is spelled out here
+// and screens reference art by name. One place to look when an image is
+// missing, and no screen ever holds a file path.
+
+export const CHAR = {
+  mia: require('../../assets/ll/char-mia.png'),
+  leo: require('../../assets/ll/char-leo.png'),
+  birdie: require('../../assets/ll/char-birdie.png'),
+  buddy: require('../../assets/ll/char-buddy.png'),
+};
+
+// Round headshots, used for avatars and speech-bubble rows.
+export const FACE = {
+  miaHappy: require('../../assets/ll/ex-mia-happy.png'),
+  miaExcited: require('../../assets/ll/ex-mia-excited.png'),
+  leoHappy: require('../../assets/ll/ex-leo-happy.png'),
+  birdieHappy: require('../../assets/ll/ex-birdie-happy.png'),
+  buddyHappy: require('../../assets/ll/ex-buddy-happy.png'),
+  buddyExcited: require('../../assets/ll/ex-buddy-excited.png'),
+};
+
+// Full-body cutouts for hero moments.
+export const HERO = {
+  mia: require('../../assets/ll/hero-mia.png'),
+  buddy: require('../../assets/ll/hero-buddy.png'),
+};
+
+export const POSE = {
+  miaWave: require('../../assets/ll/pose-mia-wave.png'),
+  miaJump: require('../../assets/ll/pose-mia-jump.png'),
+  miaRead: require('../../assets/ll/pose-mia-read.png'),
+  miaBooks: require('../../assets/ll/pose-mia-books.png'),
+  leoJump: require('../../assets/ll/pose-leo-jump.png'),
+  leoPoint: require('../../assets/ll/pose-leo-point.png'),
+  leoBook: require('../../assets/ll/pose-leo-book.png'),
+  leoSit: require('../../assets/ll/pose-leo-sit.png'),
+  birdieFly: require('../../assets/ll/pose-birdie-fly.png'),
+  birdieCheer: require('../../assets/ll/pose-birdie-cheer.png'),
+  birdieStar: require('../../assets/ll/pose-birdie-star.png'),
+  buddyFloat: require('../../assets/ll/pose-buddy-float.png'),
+  buddyThink: require('../../assets/ll/pose-buddy-think.png'),
+  buddyCelebrate: require('../../assets/ll/pose-buddy-celebrate.png'),
+  buddyLaptop: require('../../assets/ll/pose-buddy-laptop.png'),
+};
+
+// Full illustrated moments.
+export const SCENE = {
+  buddyCorrect: require('../../assets/ll/scene-buddy-correct.png'),
+  buddyHint: require('../../assets/ll/scene-buddy-hint.png'),
+  leoGame: require('../../assets/ll/scene-leo-game.png'),
+  miaIdle: require('../../assets/ll/scene-mia-idle.png'),
+  miaReward: require('../../assets/ll/scene-mia-reward.png'),
+};
+
+export const WORLD_ART = {
+  garden: require('../../assets/ll/world-garden.png'),
+  numbers: require('../../assets/ll/world-numbers.png'),
+  castle: require('../../assets/ll/world-castle.png'),
+  lab: require('../../assets/ll/world-lab.png'),
+  library: require('../../assets/ll/world-library.png'),
+};
+
+export const ICON = {
+  back: require('../../assets/ll/icon-back.png'),
+  next: require('../../assets/ll/icon-next.png'),
+  bell: require('../../assets/ll/icon-bell.png'),
+  search: require('../../assets/ll/icon-search.png'),
+  settings: require('../../assets/ll/icon-settings.png'),
+  star: require('../../assets/ll/icon-star.png'),
+  heart: require('../../assets/ll/icon-heart.png'),
+  hint: require('../../assets/ll/icon-hint.png'),
+  lock: require('../../assets/ll/icon-lock.png'),
+  home: require('../../assets/ll/icon-home.png'),
+  games: require('../../assets/ll/icon-games.png'),
+  lessons: require('../../assets/ll/icon-lessons.png'),
+  rewards: require('../../assets/ll/icon-rewards.png'),
+  profile: require('../../assets/ll/icon-profile.png'),
+  coins: require('../../assets/ll/icon-coins.png'),
+};
+
+export const REWARD_ART = {
+  coin: require('../../assets/ll/rw-coin.png'),
+  gem: require('../../assets/ll/rw-gem.png'),
+  gift: require('../../assets/ll/rw-gift.png'),
+  medal: require('../../assets/ll/rw-medal.png'),
+  star3: require('../../assets/ll/rw-star3.png'),
+  trophy: require('../../assets/ll/rw-trophy.png'),
+};
+
+export const ANIMAL = {
+  bunny: require('../../assets/ll/animal-bunny.png'),
+  fox: require('../../assets/ll/animal-fox.png'),
+  panda: require('../../assets/ll/animal-panda.png'),
+  turtle: require('../../assets/ll/animal-turtle.png'),
+};
+
+// The four companions, as data. Screens read this rather than hard-coding a
+// name next to a picture, so a character can be re-cast in one place.
+export const CREW = [
+  { id: 'mia', name: 'Mia', role: 'Your guide. Loves stories and big questions.', img: CHAR.mia, face: FACE.miaHappy, soft: '#FFE3EE' },
+  { id: 'leo', name: 'Leo', role: 'Brave explorer. First to try anything new.', img: CHAR.leo, face: FACE.leoHappy, soft: '#E8F0FF' },
+  { id: 'birdie', name: 'Birdie', role: 'Cheers you on and counts every star.', img: CHAR.birdie, face: FACE.birdieHappy, soft: '#FFF6E3' },
+  { id: 'buddy', name: 'Buddy', role: 'Gives friendly hints — never a wrong buzz.', img: CHAR.buddy, face: FACE.buddyHappy, soft: '#EDE6FF' },
+];
