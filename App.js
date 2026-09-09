@@ -1,5 +1,7 @@
-import { Baloo2_500Medium, Baloo2_700Bold } from '@expo-google-fonts/baloo-2';
-import { Fredoka_600SemiBold, Fredoka_700Bold } from '@expo-google-fonts/fredoka';
+// Imported by exact file rather than from the package root. The root index
+// re-exports every weight, which made Metro bundle all five Baloo 2 faces and
+// all five Fredoka faces — about 1.9 MB of fonts for the four the app
+// actually renders.
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -65,10 +67,10 @@ function ShellTabs() {
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    Fredoka_600SemiBold,
-    Fredoka_700Bold,
-    Baloo2_500Medium,
-    Baloo2_700Bold,
+    Fredoka_600SemiBold: require('@expo-google-fonts/fredoka/600SemiBold/Fredoka_600SemiBold.ttf'),
+    Fredoka_700Bold: require('@expo-google-fonts/fredoka/700Bold/Fredoka_700Bold.ttf'),
+    Baloo2_500Medium: require('@expo-google-fonts/baloo-2/500Medium/Baloo2_500Medium.ttf'),
+    Baloo2_700Bold: require('@expo-google-fonts/baloo-2/700Bold/Baloo2_700Bold.ttf'),
   });
 
   if (!fontsLoaded) {
