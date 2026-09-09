@@ -19,7 +19,7 @@ const PROCEDURAL_HOLD_MS = 1800; // only used by the no-clip failure path
 // Temporary — remove once the device log confirms the clips load.
 const LOG_CLIPS = true;
 
-function MiaMesh({ mood, onSettled }) {
+function MiaMesh({ mood, onSettled, onReady }) {
   const group = useRef();
   const fit = useRef();
   const { camera, size } = useThree();
@@ -33,6 +33,11 @@ function MiaMesh({ mood, onSettled }) {
 
   const { actions, names } = useAnimations(animations, group);
   const hasClips = names.length > 0;
+
+  // useGLTF suspends until the model is parsed, so reaching this point means
+  // it's ready. The wrapper uses this to drop its loading overlay — without
+  // it, a slow download looks identical to a broken screen.
+  useEffect(() => { onReady?.(); }, [onReady]);
 
   useEffect(() => {
     if (!LOG_CLIPS) return;
@@ -170,7 +175,7 @@ function MiaMesh({ mood, onSettled }) {
   );
 }
 
-export default function MiaScene({ mood, onSettled }) {
+export default function MiaScene({ mood, onSettled, onReady }) {
   return (
     <>
       {/* Ambient-heavy on purpose: the textures are baked, and a strong key
@@ -179,7 +184,7 @@ export default function MiaScene({ mood, onSettled }) {
       <directionalLight position={[3, 6, 4]} intensity={1.1} />
       <directionalLight position={[-4, 2, -3]} intensity={0.4} />
       <Suspense fallback={null}>
-        <MiaMesh mood={mood} onSettled={onSettled} />
+        <MiaMesh mood={mood} onSettled={onSettled} onReady={onReady} />
       </Suspense>
     </>
   );
