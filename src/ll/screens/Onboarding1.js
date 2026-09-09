@@ -1,6 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Mia3D from '../../components/Mia3D';
 import { POSE } from '../art';
@@ -18,6 +19,32 @@ import { ll, llGradients, llRadius, llType } from '../tokens';
 export default function Onboarding1({ navigation }) {
   const insets = useSafeAreaInsets();
 
+  // All three clips, each doing a job:
+  //   idle  — the resting loop, always underneath
+  //   wave  — she greets on arrival, and again whenever she's tapped
+  //   point — a nudge toward the button if the child hasn't moved on
+  //
+  // wave and point are one-shots. Mia3D reports back through onSettled when a
+  // clip ends and we drop to idle; pinning mood to a one-shot would clamp her
+  // on its last frame forever, which reads as frozen rather than alive.
+  const [mood, setMood] = useState('idle');
+  const [nudged, setNudged] = useState(false);
+  const settle = useCallback(() => setMood('idle'), []);
+
+  // A beat before she waves, so the screen has finished appearing first.
+  useEffect(() => {
+    const id = setTimeout(() => setMood('wave'), 600);
+    return () => clearTimeout(id);
+  }, []);
+
+  // Still here after a while? Point at what to press. Once only — a character
+  // who keeps pointing stops reading as helpful and starts reading as nagging.
+  useEffect(() => {
+    if (nudged) return undefined;
+    const id = setTimeout(() => { setMood('point'); setNudged(true); }, 7000);
+    return () => clearTimeout(id);
+  }, [nudged]);
+
   return (
     <LinearGradient colors={llGradients.onb1} locations={[0, 0.34, 0.78, 1]} style={styles.fill}>
       <StatusBar style="dark" />
@@ -30,9 +57,17 @@ export default function Onboarding1({ navigation }) {
         <Image source={POSE.birdieFly} style={styles.birdieImg} accessibilityLabel="Birdie" />
       </Floating>
 
-      <View style={styles.stage}>
-        <Mia3D mood="wave" height={430} />
-      </View>
+      {/* Tapping Mia makes her wave again — the first thing most children try
+          is touching the character, and nothing happening teaches them the
+          screen is a picture. */}
+      <Pressable
+        style={styles.stage}
+        onPress={() => setMood('wave')}
+        accessibilityRole="button"
+        accessibilityLabel="Mia. Tap to make her wave."
+      >
+        <Mia3D mood={mood} onSettled={settle} height={430} />
+      </Pressable>
 
       <View style={styles.sheet}>
         <Rise style={styles.sheetBody}>
@@ -49,7 +84,9 @@ export default function Onboarding1({ navigation }) {
           <Dots count={3} index={0} active={ll.pink} />
 
           <LLButton label="Start Learning" tone="pink" shine onPress={() => navigation.navigate('LLOnboarding2')} />
-          <LLTextButton label="Skip for now" onPress={() => navigation.replace('LLHome')} />
+          {/* Skip lands on the existing app shell. Swaps to the Little
+              Learners home the moment that screen exists. */}
+          <LLTextButton label="Skip for now" onPress={() => navigation.replace('Shell')} />
         </Rise>
       </View>
     </LinearGradient>
