@@ -15,6 +15,9 @@ import DiscoverScreen from './src/screens/shell/DiscoverScreen';
 import GamesScreen from './src/screens/shell/GamesScreen';
 import LessonsScreen from './src/screens/shell/LessonsScreen';
 import MiaScreen from './src/screens/shell/MiaScreen';
+import Onboarding1 from './src/ll/screens/Onboarding1';
+import Onboarding2 from './src/ll/screens/Onboarding2';
+import Onboarding3 from './src/ll/screens/Onboarding3';
 import AddItUpScreen from './src/screens/AddItUpScreen';
 import AlphabetGameScreen from './src/screens/AlphabetGameScreen';
 import BiggerOrSmallerScreen from './src/screens/BiggerOrSmallerScreen';
@@ -71,6 +74,13 @@ export default function App() {
     Fredoka_700Bold: require('@expo-google-fonts/fredoka/700Bold/Fredoka_700Bold.ttf'),
     Baloo2_500Medium: require('@expo-google-fonts/baloo-2/500Medium/Baloo2_500Medium.ttf'),
     Baloo2_700Bold: require('@expo-google-fonts/baloo-2/700Bold/Baloo2_700Bold.ttf'),
+    // Little Learners: Baloo 2 ExtraBold for display, Nunito for everything
+    // else. The design never uses them the other way round.
+    Baloo2_600SemiBold: require('@expo-google-fonts/baloo-2/600SemiBold/Baloo2_600SemiBold.ttf'),
+    Baloo2_800ExtraBold: require('@expo-google-fonts/baloo-2/800ExtraBold/Baloo2_800ExtraBold.ttf'),
+    Nunito_600SemiBold: require('@expo-google-fonts/nunito/600SemiBold/Nunito_600SemiBold.ttf'),
+    Nunito_700Bold: require('@expo-google-fonts/nunito/700Bold/Nunito_700Bold.ttf'),
+    Nunito_800ExtraBold: require('@expo-google-fonts/nunito/800ExtraBold/Nunito_800ExtraBold.ttf'),
   });
 
   if (!fontsLoaded) {
@@ -92,6 +102,12 @@ export default function App() {
             animationDuration: 220,
           }}
         >
+          {/* Little Learners — the new design. Onboarding is the entry point;
+              remaining screens land as they're built. */}
+          <Stack.Screen name="LLOnboarding1" component={Onboarding1} />
+          <Stack.Screen name="LLOnboarding2" component={Onboarding2} options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="LLOnboarding3" component={Onboarding3} options={{ animation: 'slide_from_right' }} />
+
           {/* Welcome is the door; Shell is the app behind it. */}
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Shell" component={ShellTabs} />
