@@ -100,7 +100,8 @@ export default function Onboarding3({ navigation }) {
         </View>
 
         <Dots count={3} index={2} active={ll.purpleMid} />
-        <LLButton label="Enter the world" tone="purple" onPress={() => navigation.replace('LLHome')} />
+        {/* Lands on the existing shell until the Little Learners home exists. */}
+        <LLButton label="Enter the world" tone="purple" onPress={() => navigation.replace('Shell')} />
       </ScrollView>
     </LinearGradient>
   );
