@@ -1,5 +1,5 @@
-import { useFrame } from '@react-three/fiber';
-import { Suspense, useEffect, useMemo, useRef } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { modelSource, useAnimations, useGLTF } from './bindings';
@@ -21,6 +21,8 @@ const LOG_CLIPS = true;
 
 function MiaMesh({ mood, onSettled }) {
   const group = useRef();
+  const fit = useRef();
+  const { camera, size } = useThree();
   const { scene, animations } = useGLTF(modelSource);
 
   // SkeletonUtils.clone, NOT scene.clone(). Object3D.clone() copies the mesh
@@ -38,19 +40,54 @@ function MiaMesh({ mood, onSettled }) {
     console.log('[Mia3D] clips found:', JSON.stringify(Object.keys(actions)));
     // eslint-disable-next-line no-console
     console.log('[Mia3D] animation count from GLB:', animations.length);
-  }, [actions, animations]);
+    const b = new THREE.Box3().setFromObject(model);
+    // eslint-disable-next-line no-console
+    console.log('[Mia3D] bounds', JSON.stringify({
+      min: b.min.toArray().map((n) => +n.toFixed(2)),
+      max: b.max.toArray().map((n) => +n.toFixed(2)),
+    }));
+  }, [actions, animations, model]);
 
-  // Centre on the origin and scale to a known height, so a re-export at a
-  // different scale doesn't send the camera hunting for her.
-  const fitted = useMemo(() => {
+  // Frame the model from its own measurements, every time the canvas resizes.
+  //
+  // The previous version hardcoded a camera distance and a scale tuned to the
+  // placeholder, which stood 1.99 units tall and centred on the origin. The
+  // rigged export is 1.15 tall with its feet at y=0 — so those constants put
+  // Mia outside the frustum and the canvas rendered empty. Nothing here is a
+  // constant now: the scale comes from the measured height, and the camera is
+  // pushed back far enough to satisfy BOTH the model's height and its width
+  // at the canvas's actual aspect ratio.
+  //
+  // The transform also lives on an inner group rather than on the loaded scene
+  // itself, so an animation track that touches the root node can't fight it.
+  useLayoutEffect(() => {
+    if (!fit.current) return;
+
     const box = new THREE.Box3().setFromObject(model);
-    const size = box.getSize(new THREE.Vector3());
+    const dims = box.getSize(new THREE.Vector3());
     const centre = box.getCenter(new THREE.Vector3());
-    const scale = 2 / (size.y || 1);
-    model.position.set(-centre.x * scale, -box.min.y * scale - 1, -centre.z * scale);
-    model.scale.setScalar(scale);
-    return model;
-  }, [model]);
+    if (!Number.isFinite(dims.y) || dims.y <= 0) return;
+
+    const TARGET_H = 2;
+    const scale = TARGET_H / dims.y;
+
+    fit.current.scale.setScalar(scale);
+    fit.current.position.set(-centre.x * scale, -centre.y * scale, -centre.z * scale);
+
+    const fov = (camera.fov * Math.PI) / 180;
+    const aspect = size.height > 0 ? size.width / size.height : 1;
+    const halfH = TARGET_H / 2;
+    const halfW = (dims.x * scale) / 2;
+    // Distance needed so the height fits, and so the width fits once the
+    // frustum is narrowed by a portrait aspect ratio.
+    const forHeight = halfH / Math.tan(fov / 2);
+    const forWidth = halfW / (Math.tan(fov / 2) * Math.max(aspect, 0.0001));
+    const distance = Math.max(forHeight, forWidth) * 1.25; // breathing room
+
+    camera.position.set(0, 0, distance);
+    camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
+  }, [model, camera, size.width, size.height]);
 
   // --- Skeletal animation: the live path ----------------------------------
   useEffect(() => {
@@ -123,8 +160,12 @@ function MiaMesh({ mood, onSettled }) {
   }, [mood, hasClips, onSettled]);
 
   return (
+    // Outer group is the mixer root — left untransformed so clip tracks and
+    // our framing can't overwrite each other. Inner group carries the fit.
     <group ref={group} dispose={null}>
-      <primitive object={fitted} />
+      <group ref={fit}>
+        <primitive object={model} />
+      </group>
     </group>
   );
 }
