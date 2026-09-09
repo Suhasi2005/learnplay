@@ -96,6 +96,7 @@ export default function App() {
       <SoundProvider>
         <NavigationContainer>
         <Stack.Navigator
+          initialRouteName="LLOnboarding1"
           screenOptions={{
             headerShown: false,
             animation: 'fade_from_bottom',
