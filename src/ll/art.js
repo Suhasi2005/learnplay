@@ -21,10 +21,14 @@ export const FACE = {
   buddyExcited: require('../../assets/ll/ex-buddy-excited.png'),
 };
 
-// Full-body cutouts for hero moments.
+// Full-body art for hero moments. Note these are NOT transparent cutouts —
+// every supplied image is fully opaque (corner alpha 255), which is why they
+// live inside rounded containers with `cover` rather than floating free.
+// That's also what made converting the large ones to JPEG safe: 4.33 MB of
+// PNG became 0.39 MB with nothing lost.
 export const HERO = {
-  mia: require('../../assets/ll/hero-mia.png'),
-  buddy: require('../../assets/ll/hero-buddy.png'),
+  mia: require('../../assets/ll/hero-mia.jpg'),
+  buddy: require('../../assets/ll/hero-buddy.jpg'),
 };
 
 export const POSE = {
@@ -55,11 +59,11 @@ export const SCENE = {
 };
 
 export const WORLD_ART = {
-  garden: require('../../assets/ll/world-garden.png'),
-  numbers: require('../../assets/ll/world-numbers.png'),
-  castle: require('../../assets/ll/world-castle.png'),
-  lab: require('../../assets/ll/world-lab.png'),
-  library: require('../../assets/ll/world-library.png'),
+  garden: require('../../assets/ll/world-garden.jpg'),
+  numbers: require('../../assets/ll/world-numbers.jpg'),
+  castle: require('../../assets/ll/world-castle.jpg'),
+  lab: require('../../assets/ll/world-lab.jpg'),
+  library: require('../../assets/ll/world-library.jpg'),
 };
 
 export const ICON = {
@@ -102,5 +106,5 @@ export const CREW = [
   { id: 'mia', name: 'Mia', role: 'Your guide. Loves stories and big questions.', img: CHAR.mia, face: FACE.miaHappy, soft: '#FFE3EE' },
   { id: 'leo', name: 'Leo', role: 'Brave explorer. First to try anything new.', img: CHAR.leo, face: FACE.leoHappy, soft: '#E8F0FF' },
   { id: 'birdie', name: 'Birdie', role: 'Cheers you on and counts every star.', img: CHAR.birdie, face: FACE.birdieHappy, soft: '#FFF6E3' },
-  { id: 'buddy', name: 'Buddy', role: 'Gives friendly hints — never a wrong buzz.', img: CHAR.buddy, face: FACE.buddyHappy, soft: '#EDE6FF' },
+  { id: 'buddy', name: 'Buddy', role: 'Gives friendly hints, never a wrong buzz.', img: CHAR.buddy, face: FACE.buddyHappy, soft: '#EDE6FF' },
 ];
