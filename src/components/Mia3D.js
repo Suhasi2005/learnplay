@@ -11,12 +11,16 @@ import { shell } from '../theme';
 // visual — lighting, framing, the animation state machine — is shared, so the
 // browser and the phone cannot drift apart.
 
-export default function Mia3D({ mood = 'idle', onSettled, height = 300, style }) {
+// `height` is optional on purpose. Given one, the canvas is that tall; given
+// none, it fills whatever space its parent offers. A fixed height inside a
+// shorter parent is what cropped Mia's head — the canvas kept its 430px and
+// the overflow was simply clipped away.
+export default function Mia3D({ mood = 'idle', onSettled, height, style }) {
   const [ready, setReady] = useState(false);
   const markReady = useCallback(() => setReady(true), []);
 
   return (
-    <View style={[{ height }, style]}>
+    <View style={[height ? { height } : styles.fill, style]}>
       <Canvas
         camera={{ position: [0, 0, 4], fov: 42 }}
         gl={{ antialias: true }}
@@ -47,6 +51,7 @@ export function LoadingBlock({ height = 300 }) {
 }
 
 const styles = StyleSheet.create({
+  fill: { flex: 1 },
   canvas: { flex: 1, backgroundColor: 'transparent' },
   loading: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', gap: 10 },
   loadingText: { fontFamily: 'Nunito_700Bold', fontSize: 13, color: shell.inkMuted },
