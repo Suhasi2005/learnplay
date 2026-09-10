@@ -66,7 +66,10 @@ export default function Onboarding1({ navigation }) {
         accessibilityRole="button"
         accessibilityLabel="Mia. Tap to make her wave."
       >
-        <Mia3D mood={mood} onSettled={settle} height={430} />
+        {/* No fixed height: the canvas takes whatever the stage has left after
+            the sheet, and the camera refits itself to that size. On a short
+            screen Mia gets smaller rather than losing her head. */}
+        <Mia3D mood={mood} onSettled={settle} />
       </Pressable>
 
       <View style={styles.sheet}>
@@ -106,7 +109,10 @@ const styles = StyleSheet.create({
     shadowColor: '#7E6EC8', shadowOpacity: 0.22, shadowRadius: 24, shadowOffset: { width: 0, height: 12 }, elevation: 5,
   },
 
-  stage: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 4 },
+  // The stage absorbs all leftover height and never goes below a floor, so on
+  // a short screen the sheet stays put and Mia scales down instead of being
+  // cropped. `overflow: hidden` keeps the canvas honest about its bounds.
+  stage: { flex: 1, minHeight: 200, overflow: 'hidden' },
 
   sheet: {
     backgroundColor: ll.cream,
