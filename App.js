@@ -18,8 +18,12 @@ import MiaScreen from './src/screens/shell/MiaScreen';
 import Onboarding1 from './src/ll/screens/Onboarding1';
 import Onboarding2 from './src/ll/screens/Onboarding2';
 import Onboarding3 from './src/ll/screens/Onboarding3';
+import BeadNecklaceScreen from './src/ll/screens/BeadNecklaceScreen';
+import GroceryBeltScreen from './src/ll/screens/GroceryBeltScreen';
+import HabitatDropScreen from './src/ll/screens/HabitatDropScreen';
 import QuizScreen from './src/ll/screens/QuizScreen';
 import LLRewardScreen from './src/ll/screens/RewardScreen';
+import RhymeTrainScreen from './src/ll/screens/RhymeTrainScreen';
 import StandardSelect from './src/ll/screens/StandardSelect';
 import LLSubjectSelect from './src/ll/screens/SubjectSelect';
 import SyllabusList from './src/ll/screens/SyllabusList';
@@ -122,6 +126,12 @@ export default function App() {
           {/* One engine behind every quiz-backed topic. */}
           <Stack.Screen name="LLQuiz" component={QuizScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="LLReward" component={LLRewardScreen} options={{ animation: 'fade' }} />
+
+          {/* Bespoke Junior KG games — one bought-in mechanic per topic. */}
+          <Stack.Screen name="GroceryBelt" component={GroceryBeltScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="RhymeTrain" component={RhymeTrainScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="BeadNecklace" component={BeadNecklaceScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="HabitatDrop" component={HabitatDropScreen} options={{ animation: 'fade' }} />
 
           {/* Welcome is the door; Shell is the app behind it. */}
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
