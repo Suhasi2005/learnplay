@@ -49,7 +49,9 @@ export default function Onboarding2({ navigation }) {
         </View>
 
         <Dots count={3} index={1} active={ll.blue} />
-        <LLButton label="Nice to meet you!" tone="blue" onPress={() => navigation.navigate('LLOnboarding3')} />
+        {/* Straight into choosing a class — that pick decides every screen
+            after this one, so it comes before anything optional. */}
+        <LLButton label="Nice to meet you!" tone="blue" onPress={() => navigation.navigate('LLStandard')} />
       </ScrollView>
     </LinearGradient>
   );
