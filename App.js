@@ -18,6 +18,8 @@ import MiaScreen from './src/screens/shell/MiaScreen';
 import Onboarding1 from './src/ll/screens/Onboarding1';
 import Onboarding2 from './src/ll/screens/Onboarding2';
 import Onboarding3 from './src/ll/screens/Onboarding3';
+import QuizScreen from './src/ll/screens/QuizScreen';
+import LLRewardScreen from './src/ll/screens/RewardScreen';
 import StandardSelect from './src/ll/screens/StandardSelect';
 import LLSubjectSelect from './src/ll/screens/SubjectSelect';
 import SyllabusList from './src/ll/screens/SyllabusList';
@@ -117,6 +119,9 @@ export default function App() {
           <Stack.Screen name="LLStandard" component={StandardSelect} options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="LLSubjects" component={LLSubjectSelect} options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="LLSyllabus" component={SyllabusList} options={{ animation: 'slide_from_right' }} />
+          {/* One engine behind every quiz-backed topic. */}
+          <Stack.Screen name="LLQuiz" component={QuizScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="LLReward" component={LLRewardScreen} options={{ animation: 'fade' }} />
 
           {/* Welcome is the door; Shell is the app behind it. */}
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
