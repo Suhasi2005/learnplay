@@ -12,14 +12,37 @@ export const CHAR = {
 };
 
 // Round headshots, used for avatars and speech-bubble rows.
+//
+// Every character has the same four expressions, which is what lets a screen
+// pick a mood by name instead of hunting for whichever file happens to exist.
 export const FACE = {
   miaHappy: require('../../assets/ll/ex-mia-happy.png'),
   miaExcited: require('../../assets/ll/ex-mia-excited.png'),
+  miaLaughing: require('../../assets/ll/ex-mia-laughing.png'),
+  miaWink: require('../../assets/ll/ex-mia-wink.png'),
+
   leoHappy: require('../../assets/ll/ex-leo-happy.png'),
+  leoExcited: require('../../assets/ll/ex-leo-excited.png'),
+  leoLaughing: require('../../assets/ll/ex-leo-laughing.png'),
+  leoWink: require('../../assets/ll/ex-leo-wink.png'),
+
   birdieHappy: require('../../assets/ll/ex-birdie-happy.png'),
+  birdieExcited: require('../../assets/ll/ex-birdie-excited.png'),
+  birdieLaughing: require('../../assets/ll/ex-birdie-laughing.png'),
+  birdieWink: require('../../assets/ll/ex-birdie-wink.png'),
+
   buddyHappy: require('../../assets/ll/ex-buddy-happy.png'),
   buddyExcited: require('../../assets/ll/ex-buddy-excited.png'),
+  buddyLaughing: require('../../assets/ll/ex-buddy-laughing.png'),
+  buddyWink: require('../../assets/ll/ex-buddy-wink.png'),
 };
+
+// Pick an expression by character and mood — screens say what they mean
+// rather than naming a file.
+export function faceOf(who, mood = 'happy') {
+  const key = `${who}${mood[0].toUpperCase()}${mood.slice(1)}`;
+  return FACE[key] ?? FACE[`${who}Happy`] ?? FACE.miaHappy;
+}
 
 // Full-body art for hero moments. Note these are NOT transparent cutouts —
 // every supplied image is fully opaque (corner alpha 255), which is why they
@@ -28,34 +51,52 @@ export const FACE = {
 // PNG became 0.39 MB with nothing lost.
 export const HERO = {
   mia: require('../../assets/ll/hero-mia.jpg'),
+  leo: require('../../assets/ll/hero-leo.jpg'),
   buddy: require('../../assets/ll/hero-buddy.jpg'),
 };
 
 export const POSE = {
   miaWave: require('../../assets/ll/pose-mia-wave.png'),
   miaJump: require('../../assets/ll/pose-mia-jump.png'),
+  miaPoint: require('../../assets/ll/pose-mia-point.png'),
   miaRead: require('../../assets/ll/pose-mia-read.png'),
   miaBooks: require('../../assets/ll/pose-mia-books.png'),
   leoJump: require('../../assets/ll/pose-leo-jump.png'),
   leoPoint: require('../../assets/ll/pose-leo-point.png'),
+  leoWave: require('../../assets/ll/pose-leo-wave.png'),
   leoBook: require('../../assets/ll/pose-leo-book.png'),
   leoSit: require('../../assets/ll/pose-leo-sit.png'),
   birdieFly: require('../../assets/ll/pose-birdie-fly.png'),
   birdieCheer: require('../../assets/ll/pose-birdie-cheer.png'),
   birdieStar: require('../../assets/ll/pose-birdie-star.png'),
+  birdieThink: require('../../assets/ll/pose-birdie-think.png'),
+  birdieSleep: require('../../assets/ll/pose-birdie-sleep.png'),
   buddyFloat: require('../../assets/ll/pose-buddy-float.png'),
   buddyThink: require('../../assets/ll/pose-buddy-think.png'),
+  buddyWave: require('../../assets/ll/pose-buddy-wave.png'),
   buddyCelebrate: require('../../assets/ll/pose-buddy-celebrate.png'),
   buddyLaptop: require('../../assets/ll/pose-buddy-laptop.png'),
 };
 
 // Full illustrated moments.
 export const SCENE = {
+  miaHello: require('../../assets/ll/scene-mia-hello.png'),
+  miaHome: require('../../assets/ll/scene-mia-home.png'),
+  miaIdle: require('../../assets/ll/scene-mia-idle.png'),
+  miaLesson: require('../../assets/ll/scene-mia-lesson.png'),
+  miaReward: require('../../assets/ll/scene-mia-reward.png'),
+  leoHome: require('../../assets/ll/scene-leo-home.png'),
+  leoIdle: require('../../assets/ll/scene-leo-idle.png'),
+  leoLesson: require('../../assets/ll/scene-leo-lesson.png'),
+  leoGame: require('../../assets/ll/scene-leo-game.png'),
+  leoOnboard: require('../../assets/ll/scene-leo-onboard.png'),
+  leoReward: require('../../assets/ll/scene-leo-reward.png'),
   buddyCorrect: require('../../assets/ll/scene-buddy-correct.png'),
   buddyHint: require('../../assets/ll/scene-buddy-hint.png'),
-  leoGame: require('../../assets/ll/scene-leo-game.png'),
-  miaIdle: require('../../assets/ll/scene-mia-idle.png'),
-  miaReward: require('../../assets/ll/scene-mia-reward.png'),
+  buddyHome: require('../../assets/ll/scene-buddy-home.png'),
+  buddyLesson: require('../../assets/ll/scene-buddy-lesson.png'),
+  buddyLevelUp: require('../../assets/ll/scene-buddy-levelup.png'),
+  buddyOnboard: require('../../assets/ll/scene-buddy-onboard.png'),
 };
 
 export const WORLD_ART = {
