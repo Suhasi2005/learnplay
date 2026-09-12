@@ -58,10 +58,16 @@ export default function SyllabusList({ route, navigation }) {
   function open(topic, fresh) {
     if (fresh) clearProgress(topic.id);
     const p = fresh ? null : topic.progress;
+    // The bespoke games only need their own params; the shared quiz engine
+    // also needs to know which topic and subject it is rendering, so it can
+    // title itself and pick up the subject's colour.
     navigation.navigate(topic.playable, {
       startIndex: p?.index ?? 0,
       startStars: p?.stars ?? 0,
       topicId: topic.id,
+      subjectId,
+      standardId,
+      title: topic.label,
     });
   }
 
