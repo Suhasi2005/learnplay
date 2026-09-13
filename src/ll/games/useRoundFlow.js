@@ -22,6 +22,8 @@ export function useRoundFlow({ route, navigation, total, defaults }) {
   const [stars, setStars] = useState(params.startStars);
   const [isProcessing, setIsProcessing] = useState(false);
   const [misses, setMisses] = useState(0);
+  // Which tap target is currently shaking. Choice.js reads it.
+  const [wrongId, setWrongId] = useState(null);
 
   const sound = useSound();
   const confetti = useRef(null);
@@ -41,7 +43,10 @@ export function useRoundFlow({ route, navigation, total, defaults }) {
     };
   }, []);
 
-  useEffect(() => { setMisses(0); }, [index]);
+  useEffect(() => {
+    setMisses(0);
+    setWrongId(null);
+  }, [index]);
 
   function later(fn, ms) {
     const t = setTimeout(() => {
@@ -109,6 +114,14 @@ export function useRoundFlow({ route, navigation, total, defaults }) {
     say(text);
   }
 
+  // A miss that also shakes one specific tap target.
+  function missOn(id, text) {
+    if (lock.current) return;
+    setWrongId(id);
+    miss(text);
+    later(() => setWrongId(null), 420);
+  }
+
   return {
     title,
     index,
@@ -122,6 +135,8 @@ export function useRoundFlow({ route, navigation, total, defaults }) {
     succeed,
     cheer,
     miss,
+    missOn,
+    wrongId,
     say,
     later,
     lock,
