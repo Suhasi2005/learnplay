@@ -21,9 +21,17 @@ import Onboarding3 from './src/ll/screens/Onboarding3';
 import BeadNecklaceScreen from './src/ll/screens/BeadNecklaceScreen';
 import GroceryBeltScreen from './src/ll/screens/GroceryBeltScreen';
 import HabitatDropScreen from './src/ll/screens/HabitatDropScreen';
+import LaneRaceScreen from './src/ll/screens/LaneRaceScreen';
+import LilyPadScreen from './src/ll/screens/LilyPadScreen';
+import PriceTagScreen from './src/ll/screens/PriceTagScreen';
 import QuizScreen from './src/ll/screens/QuizScreen';
 import LLRewardScreen from './src/ll/screens/RewardScreen';
 import RhymeTrainScreen from './src/ll/screens/RhymeTrainScreen';
+import SchoolDayScreen from './src/ll/screens/SchoolDayScreen';
+import SeesawScreen from './src/ll/screens/SeesawScreen';
+import SentenceBlocksScreen from './src/ll/screens/SentenceBlocksScreen';
+import ShapeDetectiveScreen from './src/ll/screens/ShapeDetectiveScreen';
+import StoryBalloonScreen from './src/ll/screens/StoryBalloonScreen';
 import StandardSelect from './src/ll/screens/StandardSelect';
 import LLSubjectSelect from './src/ll/screens/SubjectSelect';
 import SyllabusList from './src/ll/screens/SyllabusList';
@@ -132,6 +140,16 @@ export default function App() {
           <Stack.Screen name="RhymeTrain" component={RhymeTrainScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="BeadNecklace" component={BeadNecklaceScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="HabitatDrop" component={HabitatDropScreen} options={{ animation: 'fade' }} />
+
+          {/* Bespoke Senior KG games — share useRoundFlow + GameFrame. */}
+          <Stack.Screen name="StoryBalloon" component={StoryBalloonScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="SentenceBlocks" component={SentenceBlocksScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="ShapeDetective" component={ShapeDetectiveScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="PriceTag" component={PriceTagScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="Seesaw" component={SeesawScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="LilyPad" component={LilyPadScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="SchoolDay" component={SchoolDayScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="LaneRace" component={LaneRaceScreen} options={{ animation: 'fade' }} />
 
           {/* Welcome is the door; Shell is the app behind it. */}
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
