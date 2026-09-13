@@ -32,6 +32,22 @@ import SeesawScreen from './src/ll/screens/SeesawScreen';
 import SentenceBlocksScreen from './src/ll/screens/SentenceBlocksScreen';
 import ShapeDetectiveScreen from './src/ll/screens/ShapeDetectiveScreen';
 import StoryBalloonScreen from './src/ll/screens/StoryBalloonScreen';
+import AlphabetLadderScreen from './src/ll/screens/AlphabetLadderScreen';
+import AnimalRiddleScreen from './src/ll/screens/AnimalRiddleScreen';
+import BackpackScreen from './src/ll/screens/BackpackScreen';
+import CaterpillarScreen from './src/ll/screens/CaterpillarScreen';
+import DayOrderScreen from './src/ll/screens/DayOrderScreen';
+import DominoesScreen from './src/ll/screens/DominoesScreen';
+import FamilyTreeScreen from './src/ll/screens/FamilyTreeScreen';
+import GiveChangeScreen from './src/ll/screens/GiveChangeScreen';
+import NumberFishingScreen from './src/ll/screens/NumberFishingScreen';
+import PlaceValueScreen from './src/ll/screens/PlaceValueScreen';
+import RobotFixScreen from './src/ll/screens/RobotFixScreen';
+import RollOrSlideScreen from './src/ll/screens/RollOrSlideScreen';
+import RoomCatchScreen from './src/ll/screens/RoomCatchScreen';
+import SoundBlenderScreen from './src/ll/screens/SoundBlenderScreen';
+import WardrobeScreen from './src/ll/screens/WardrobeScreen';
+import WhichMoreScreen from './src/ll/screens/WhichMoreScreen';
 import StandardSelect from './src/ll/screens/StandardSelect';
 import LLSubjectSelect from './src/ll/screens/SubjectSelect';
 import SyllabusList from './src/ll/screens/SyllabusList';
@@ -150,6 +166,24 @@ export default function App() {
           <Stack.Screen name="LilyPad" component={LilyPadScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="SchoolDay" component={SchoolDayScreen} options={{ animation: 'fade' }} />
           <Stack.Screen name="LaneRace" component={LaneRaceScreen} options={{ animation: 'fade' }} />
+
+          {/* Bespoke Grade 1 games — useRoundFlow + GameFrame + Choice. */}
+          <Stack.Screen name="AlphabetLadder" component={AlphabetLadderScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="SoundBlender" component={SoundBlenderScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="Caterpillar" component={CaterpillarScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="RobotFix" component={RobotFixScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="WhichMore" component={WhichMoreScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="RollOrSlide" component={RollOrSlideScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="NumberFishing" component={NumberFishingScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="Dominoes" component={DominoesScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="PlaceValue" component={PlaceValueScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="DayOrder" component={DayOrderScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="GiveChange" component={GiveChangeScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="Wardrobe" component={WardrobeScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="RoomCatch" component={RoomCatchScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="FamilyTree" component={FamilyTreeScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="Backpack" component={BackpackScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen name="AnimalRiddle" component={AnimalRiddleScreen} options={{ animation: 'fade' }} />
 
           {/* Welcome is the door; Shell is the app behind it. */}
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
