@@ -2,20 +2,34 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
-import BackButton from '../components/BackButton';
-import BouncyButton from '../components/BouncyButton';
 import StreakBadge from '../components/StreakBadge';
 import { useSound } from '../context/SoundContext';
 import { TOTAL_LEVELS, buildLevel } from '../oppositesData';
 import { saveProgress } from '../storage';
-import { bgGradient, colors, fonts, radius, spacing } from '../theme';
+import { ICON } from '../ll/art';
+import GameObject from '../ll/objects';
+import { IconButton, Pill, StarChip } from '../ll/kit';
+import { Sheen, TopHighlight } from '../ll/premium';
+import { ll, llRadius, llRing, llSurface, llType, withAlpha } from '../ll/tokens';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-
-function Card({ card, state, onPress }) {
-  // state: 'idle' | 'selected' | 'wrong' | 'matched'
+// "Opposites Match" — Opposites (Senior KG).
+//
+// Tap two cards that are opposites. A matched pair used to shrink to nothing,
+// leaving a blank gap — so the board emptied out and the child's completed
+// work disappeared.
+//
+// Now a matched pair leaves a **record** in its own slot: the two objects
+// side by side with a ↔ between them. The board fills up with the pairs the
+// child has made instead of emptying, and each finished pair stays visible as
+// the thing being taught — "hot ↔ cold" is a relationship, and a relationship
+// needs both halves on screen to exist at all.
+//
+// Cards sit on a felt game mat, the surface a matching game is actually
+// played on. The round loop, the `saveProgress(GAME_ID, level, …)` call and
+// the Completion hand-off are unchanged.
+function Card({ card, state, onPress, size }) {
   const shake = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(1)).current;
 
@@ -35,24 +49,56 @@ function Card({ card, state, onPress }) {
   }, [state]);
 
   const translateX = shake.interpolate({ inputRange: [-1, 1], outputRange: [-8, 8] });
+  const selected = state === 'selected';
 
   return (
-    // Fixed-size slot so a matched card shrinking to scale:0 doesn't
-    // reflow the rest of the grid — it just becomes an invisible gap.
-    <View style={styles.cardSlot} pointerEvents={state === 'matched' ? 'none' : 'auto'}>
+    // Fixed-size slot so a matched card shrinking to scale:0 doesn't reflow
+    // the grid — it leaves the slot for the pair record to occupy.
+    <View style={[styles.cardSlot, { width: size, height: size * 1.22 }]} pointerEvents={state === 'matched' ? 'none' : 'auto'}>
       <Animated.View style={{ transform: [{ translateX }, { scale }] }}>
-        <BouncyButton
-          style={[
-            styles.card,
-            state === 'selected' && styles.cardSelected,
-          ]}
+        <Pressable
           onPress={onPress}
+          accessibilityRole="button"
           accessibilityLabel={card.label}
+          style={({ pressed }) => [
+            styles.cardCast,
+            selected && { shadowColor: ll.purpleDeep, shadowOpacity: 0.45, shadowRadius: 20, elevation: 9 },
+            state === 'wrong' && { shadowColor: ll.pink, shadowOpacity: 0.4 },
+            selected && { transform: [{ translateY: -4 }] },
+            pressed && { transform: [{ translateY: 2 }, { scale: 0.97 }] },
+          ]}
         >
-          <Text style={styles.cardEmoji}>{card.emoji}</Text>
-          <Text style={styles.cardLabel}>{card.label}</Text>
-        </BouncyButton>
+          <LinearGradient
+            colors={selected ? ['#F6F1FF', '#E9DEFF'] : llSurface.white}
+            style={[
+              styles.card,
+              { width: size, height: size * 1.22 },
+              selected ? styles.cardSelected : state === 'wrong' ? styles.cardWrong : llRing.faint,
+            ]}
+          >
+            <Sheen variant="tile" radius={llRadius.md} />
+            <TopHighlight radius={llRadius.md} />
+            <GameObject id={card.id} emoji={card.emoji} size={size * 0.44} />
+            <Text style={styles.cardLabel} numberOfLines={1} adjustsFontSizeToFit>{card.label}</Text>
+          </LinearGradient>
+        </Pressable>
       </Animated.View>
+    </View>
+  );
+}
+
+// What a solved pair leaves behind: both halves, joined.
+function PairRecord({ a, b, size }) {
+  return (
+    <View style={[styles.record, { width: size, height: size * 1.22 }]} pointerEvents="none">
+      <View style={styles.recordRow}>
+        <GameObject id={a?.id} emoji={a?.emoji} size={size * 0.3} />
+        <Text style={styles.recordArrow}>↔</Text>
+        <GameObject id={b?.id} emoji={b?.emoji} size={size * 0.3} />
+      </View>
+      <Text style={styles.recordLabel} numberOfLines={1} adjustsFontSizeToFit>
+        {a?.label} ↔ {b?.label}
+      </Text>
     </View>
   );
 }
@@ -75,6 +121,7 @@ export default function OppositesMatchScreen({ route, navigation }) {
   const confettiRef = useRef(null);
   const isMounted = useRef(true);
   const timeoutRef = useRef(null);
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     isMounted.current = true;
@@ -98,6 +145,8 @@ export default function OppositesMatchScreen({ route, navigation }) {
     return 'idle';
   }
 
+  // ---------------------------------------------------------------------
+  // Unchanged matching logic.
   function handlePress(card) {
     if (isProcessing || matchedPairIds.includes(card.pairId) || card.id === selectedId) return;
 
@@ -108,7 +157,6 @@ export default function OppositesMatchScreen({ route, navigation }) {
 
     const firstCard = cards.find((c) => c.id === selectedId);
     if (firstCard.pairId === card.pairId) {
-      // match!
       setIsProcessing(true);
       const newStars = stars + 1;
       const newStreak = streak + 1;
@@ -144,9 +192,8 @@ export default function OppositesMatchScreen({ route, navigation }) {
       }, 900);
     } else {
       setWrongIds([selectedId, card.id]);
-      // Clear the selection right away (not just after the shake finishes) so
-      // a fast third tap starts a fresh pick instead of being compared
-      // against a card that's already mid-shake from the last wrong guess.
+      // Clear the selection right away so a fast third tap starts a fresh
+      // pick instead of comparing against a card already mid-shake.
       setSelectedId(null);
       setStreak(0);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
@@ -157,52 +204,135 @@ export default function OppositesMatchScreen({ route, navigation }) {
       }, 500);
     }
   }
+  // ---------------------------------------------------------------------
+
+  const compact = width < 360;
+  const size = compact ? 74 : 84;
+  const totalPairs = cards.length / 2;
+
+  // For each matched pair, the two cards that formed it — used for the record.
+  const recordFor = (pairId) => cards.filter((c) => c.pairId === pairId);
+  // The slot a pair's record occupies: the first of its two cards.
+  const recordSlotIds = new Set(matchedPairIds.map((pid) => recordFor(pid)[0]?.id));
 
   return (
-    <LinearGradient colors={bgGradient} style={styles.container}>
+    <LinearGradient colors={['#EDE7FB', '#F3EFFC', '#FFF4EC']} locations={[0, 0.5, 1]} style={styles.container}>
       <StatusBar style="dark" />
-      <BackButton onPress={() => navigation.goBack()} />
-      <StreakBadge streak={streak} />
+
+      <View style={styles.topRow}>
+        <IconButton icon={ICON.back} label="Back" size={40} onPress={() => navigation.goBack()} />
+        <Pill label="Opposites" bg={ll.purpleSoft} color={ll.purpleDeep} style={styles.titlePill} />
+        <StarChip count={stars} />
+      </View>
+
+      <View style={styles.streakWrap}>
+        <StreakBadge streak={streak} />
+      </View>
 
       <Text style={styles.eyebrow}>Level {level + 1} of {TOTAL_LEVELS}</Text>
       <Text style={styles.prompt}>Tap two cards that are opposites</Text>
 
-      <View style={styles.grid}>
-        {cards.map((card) => (
-          <Card key={card.id} card={card} state={cardState(card)} onPress={() => handlePress(card)} />
+      {/* Pairs found, as a count — the goal made explicit. */}
+      <View style={styles.pairCount}>
+        {Array.from({ length: totalPairs }, (_, i) => (
+          <View key={i} style={[styles.pairPip, i < matchedPairIds.length && styles.pairPipOn]} />
         ))}
+        <Text style={styles.pairCountText}>
+          {matchedPairIds.length} of {totalPairs} pairs
+        </Text>
       </View>
 
-      <View style={styles.starsRow}>
-        <Text style={styles.starsText}>⭐ {stars}</Text>
-      </View>
+      {/* THE FELT MAT --------------------------------------------------- */}
+      <LinearGradient colors={['#D9CDF2', '#C4B4E8']} style={styles.mat}>
+        <View style={styles.matStitch} pointerEvents="none" />
+        <View style={styles.grid}>
+          {cards.map((card) => {
+            const state = cardState(card);
+            const showRecord = state === 'matched' && recordSlotIds.has(card.id);
+            const pair = showRecord ? recordFor(card.pairId) : null;
+            return (
+              <View key={card.id} style={styles.slotWrap}>
+                {/* The empty socket the card sat in. */}
+                {state === 'matched' ? (
+                  <View style={[styles.socket, { width: size, height: size * 1.22 }]} pointerEvents="none" />
+                ) : null}
+                {showRecord ? <PairRecord a={pair[0]} b={pair[1]} size={size} /> : null}
+                <Card card={card} state={state} onPress={() => handlePress(card)} size={size} />
+              </View>
+            );
+          })}
+        </View>
+      </LinearGradient>
 
-      <ConfettiCannon
-        ref={confettiRef}
-        count={30}
-        origin={{ x: SCREEN_WIDTH / 2, y: 0 }}
-        autoStart={false}
-        fadeOut
-        fallSpeed={2200}
-      />
+      <ConfettiCannon ref={confettiRef} count={30} origin={{ x: width / 2, y: 0 }} autoStart={false} fadeOut fallSpeed={2200} />
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: spacing.md, alignItems: 'center' },
-  eyebrow: { fontFamily: fonts.bodyBold, color: colors.grapeDeep, fontSize: 13, marginTop: spacing.md },
-  prompt: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.ink, marginTop: spacing.xs, marginBottom: spacing.lg, textAlign: 'center' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', maxWidth: 340 },
-  cardSlot: { width: 82, height: 100, margin: 4, alignItems: 'center', justifyContent: 'center' },
-  card: {
-    width: 82, height: 100, borderRadius: radius.md, backgroundColor: colors.white,
-    borderWidth: 2, borderColor: colors.border, alignItems: 'center', justifyContent: 'center',
-    shadowColor: colors.ink, shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 2,
+  container: { flex: 1, alignItems: 'center', paddingHorizontal: 18 },
+  topRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'stretch', marginTop: 54 },
+  titlePill: { flex: 1, alignSelf: 'center' },
+  streakWrap: { alignSelf: 'flex-end', marginTop: 8, minHeight: 4 },
+
+  eyebrow: { ...llType.eyebrow, color: ll.purpleDeep, marginTop: 8, textTransform: 'uppercase' },
+  prompt: { ...llType.h4, color: ll.ink, marginTop: 4, marginBottom: 12, textAlign: 'center' },
+
+  pairCount: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 14 },
+  pairPip: {
+    width: 9, height: 9, borderRadius: 5,
+    backgroundColor: withAlpha('#8B86B8', 0.3),
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.8)',
   },
-  cardSelected: { borderColor: colors.grapeDeep, borderWidth: 3, backgroundColor: colors.grape + '22' },
-  cardEmoji: { fontSize: 32 },
-  cardLabel: { fontFamily: fonts.bodyBold, fontSize: 12, color: colors.ink, marginTop: 2 },
-  starsRow: { marginTop: spacing.lg, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.white, paddingVertical: 7, paddingHorizontal: spacing.md, borderRadius: radius.pill, borderBottomWidth: 3, borderBottomColor: colors.disabled },
-  starsText: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.ink },
+  pairPipOn: { backgroundColor: ll.green, borderColor: ll.greenDeep },
+  pairCountText: {
+    marginLeft: 4, fontFamily: 'Nunito_800ExtraBold', fontSize: 10,
+    letterSpacing: 1, color: ll.purpleDeep, textTransform: 'uppercase',
+  },
+
+  // Felt mat: the table a matching game is played on.
+  mat: {
+    borderRadius: llRadius.xxl, padding: 13, alignItems: 'center',
+    shadowColor: '#5442A8', shadowOpacity: 0.26, shadowRadius: 26,
+    shadowOffset: { width: 0, height: 14 }, elevation: 9,
+  },
+  matStitch: {
+    position: 'absolute', top: 6, left: 6, right: 6, bottom: 6,
+    borderRadius: 26, borderWidth: 1.5, borderStyle: 'dashed',
+    borderColor: 'rgba(255,255,255,0.55)',
+  },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', maxWidth: 330 },
+  slotWrap: { position: 'relative', margin: 4 },
+  cardSlot: { alignItems: 'center', justifyContent: 'center' },
+
+  socket: {
+    position: 'absolute', borderRadius: llRadius.md,
+    borderWidth: 2, borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.7)',
+    backgroundColor: 'rgba(255,255,255,0.18)',
+  },
+  cardCast: {
+    borderRadius: llRadius.md,
+    shadowColor: '#4B3A8E', shadowOpacity: 0.26, shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 }, elevation: 5,
+  },
+  card: {
+    borderRadius: llRadius.md, alignItems: 'center', justifyContent: 'center',
+    overflow: 'hidden', paddingHorizontal: 5, gap: 2,
+  },
+  cardSelected: { borderWidth: 3, borderColor: ll.purple },
+  cardWrong: { borderWidth: 3, borderColor: '#FFB3C9' },
+  cardLabel: { fontFamily: 'Nunito_800ExtraBold', fontSize: 11, color: ll.ink, textAlign: 'center' },
+
+  // The pair record left in the slot.
+  record: {
+    position: 'absolute', alignItems: 'center', justifyContent: 'center',
+    borderRadius: llRadius.md, backgroundColor: 'rgba(255,255,255,0.75)',
+    borderWidth: 2, borderColor: withAlpha(ll.green, 0.5), gap: 3, paddingHorizontal: 4,
+  },
+  recordRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  recordArrow: { fontFamily: 'Nunito_800ExtraBold', fontSize: 13, color: ll.greenDeep },
+  recordLabel: {
+    fontFamily: 'Nunito_700Bold', fontSize: 8.5, color: ll.greenDeep,
+    textAlign: 'center', paddingHorizontal: 2,
+  },
 });
