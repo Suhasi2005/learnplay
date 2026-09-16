@@ -3,7 +3,8 @@ import * as Haptics from 'expo-haptics';
 import { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { ICON } from './art';
-import { ll, llButtons, llRadius, llShadow, llType } from './tokens';
+import { Sheen, TopHighlight } from './premium';
+import { ll, llButtons, llElevation, llRadius, llRing, llSurface, llType } from './tokens';
 
 // Little Learners component kit.
 //
@@ -12,6 +13,12 @@ import { ll, llButtons, llRadius, llShadow, llType } from './tokens';
 // purple-tinted shadow, a pill badge, a rounded progress track. Each one is
 // built once here so the sixteen screens stay identical where the design is
 // identical.
+//
+// Card, Pill and LLButton now carry the premium surface treatment: a short
+// vertical gradient instead of a flat fill, a hairline inner ring, a white
+// top highlight, and a two-view shadow stack (tight contact + soft cast).
+// All three keep their original props exactly — the upgrade is purely in what
+// they render, so no call site needs to change.
 
 // ---------------------------------------------------------------------------
 // Motion. The design declares these as CSS keyframes; these are the RN
@@ -76,7 +83,9 @@ export function Pop({ children, delay = 0, from = 0.6, style }) {
 // Buttons
 
 // The design's primary control: a vertical gradient, a coloured glow beneath,
-// and an inset dark line along the bottom edge that reads as thickness.
+// and an inset dark line along the bottom edge that reads as thickness. The
+// premium pass adds a gloss wash over the fill and a white top highlight, so
+// the button reads as a moulded object rather than a coloured rectangle.
 export function LLButton({
   label, tone = 'pink', onPress, disabled, full = true, size = 'lg', style, shine = false, icon,
 }) {
@@ -105,22 +114,28 @@ export function LLButton({
         style={[
           styles.btnWrap,
           { transform: [{ translateY }] },
-          !disabled && { shadowColor: g.to, shadowOpacity: 0.42, shadowRadius: 22, shadowOffset: { width: 0, height: 12 }, elevation: 6 },
+          // Coloured cast shadow — the glow that belongs to this tone.
+          !disabled && llElevation.tinted(g.to, { opacity: 0.42, radius: 22, height: 12, elevation: 6 }),
         ]}
       >
-        <LinearGradient
-          colors={disabled ? [ll.lilac, ll.lilac] : [g.from, g.to]}
-          style={[styles.btn, { paddingVertical: pad }]}
-        >
-          {icon ? <Image source={icon} style={styles.btnIcon} /> : null}
-          <Text style={[styles.btnText, { fontSize, color: disabled ? ll.muted : ll.white }]} numberOfLines={1}>
-            {label}
-          </Text>
-          {/* The sweeping highlight on the onboarding CTA. */}
-          {shine && !disabled ? <Shine /> : null}
-          {/* Inset bottom edge — the design draws this on every filled button. */}
-          <View style={styles.btnInset} pointerEvents="none" />
-        </LinearGradient>
+        {/* Contact shadow: the tight dark line directly under the button. */}
+        <View style={[!disabled && llElevation.contact, { borderRadius: llRadius.xl }]}>
+          <LinearGradient
+            colors={disabled ? [ll.lilac, ll.lilac] : [g.from, g.to]}
+            style={[styles.btn, { paddingVertical: pad }, !disabled && llRing.light]}
+          >
+            {/* Gloss over the fill — bright top, faint dark lip. */}
+            {!disabled ? <Sheen variant="tile" radius={llRadius.xl} /> : null}
+            {icon ? <Image source={icon} style={styles.btnIcon} /> : null}
+            <Text style={[styles.btnText, { fontSize, color: disabled ? ll.muted : ll.white }]} numberOfLines={1}>
+              {label}
+            </Text>
+            {/* The sweeping highlight on the onboarding CTA. */}
+            {shine && !disabled ? <Shine /> : null}
+            {/* Inset bottom edge — the design draws this on every filled button. */}
+            <View style={styles.btnInset} pointerEvents="none" />
+          </LinearGradient>
+        </View>
       </Animated.View>
     </Pressable>
   );
@@ -157,16 +172,25 @@ export function LLTextButton({ label, onPress, style }) {
   );
 }
 
-// The 40–44px rounded-square icon buttons in headers.
+// The 40–44px rounded-square icon buttons in headers. Now a gradient chrome
+// surface with a white top edge, matching the header buttons in the design.
 export function IconButton({ icon, onPress, label, size = 44, style }) {
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      style={[styles.iconBtn, { width: size, height: size }, style]}
+      style={[llElevation.ambient, { borderRadius: 16 }, style]}
     >
-      <Image source={icon} style={{ width: size * 0.68, height: size * 0.68, borderRadius: 10 }} />
+      <View style={[llElevation.contact, { borderRadius: 16 }]}>
+        <LinearGradient
+          colors={llSurface.chrome}
+          style={[styles.iconBtn, { width: size, height: size }, llRing.faint]}
+        >
+          <TopHighlight radius={16} />
+          <Image source={icon} style={{ width: size * 0.68, height: size * 0.68, borderRadius: 10 }} />
+        </LinearGradient>
+      </View>
     </Pressable>
   );
 }
@@ -174,14 +198,70 @@ export function IconButton({ icon, onPress, label, size = 44, style }) {
 // ---------------------------------------------------------------------------
 // Surfaces
 
-export function Card({ children, style, radius = llRadius.xxl, pad = 18, tone = ll.white }) {
-  return <View style={[{ backgroundColor: tone, borderRadius: radius, padding: pad }, llShadow.card, style]}>{children}</View>;
+// A white card. Same props as before; the fill is now a short vertical
+// gradient with a hairline ring and a white top highlight, and the shadow is
+// split into contact + cast. Pass `tone` to keep a flat colour fill (some
+// screens pass a pastel tint and should stay tinted).
+export function Card({ children, style, radius = llRadius.xxl, pad = 18, tone = ll.white, surface = null, depth = 'card' }) {
+  const isWhite = tone === ll.white;
+  const cast = depth === 'hero' ? { shadowColor: '#5442A8', shadowOpacity: 0.3, shadowRadius: 60, shadowOffset: { width: 0, height: 34 }, elevation: 14 } : llElevation.cast;
+
+  // A tinted card keeps its flat colour — the gradient treatment is for the
+  // white surfaces the design uses gradients on.
+  if (!isWhite && !surface) {
+    return (
+      <View style={[cast, { borderRadius: radius }]}>
+        <View style={[llElevation.contact, { borderRadius: radius }]}>
+          <View style={[{ backgroundColor: tone, borderRadius: radius, padding: pad, overflow: 'hidden' }, llRing.faint, style]}>
+            <TopHighlight radius={radius} />
+            {children}
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={[cast, { borderRadius: radius }]}>
+      <View style={[llElevation.contact, { borderRadius: radius }]}>
+        <LinearGradient
+          colors={surface ?? llSurface.white}
+          style={[{ borderRadius: radius, padding: pad, overflow: 'hidden' }, llRing.faint, style]}
+        >
+          <TopHighlight radius={radius} />
+          {children}
+        </LinearGradient>
+      </View>
+    </View>
+  );
 }
 
+// A pill badge. Gains a soft ambient shadow and a translucent white inner
+// ring so it lifts off a pastel ground instead of lying flat on it.
 export function Pill({ label, bg = ll.white, color = ll.ink, style, spaced = false }) {
   return (
-    <View style={[styles.pill, { backgroundColor: bg }, style]}>
+    <View style={[styles.pill, { backgroundColor: bg }, styles.pillLift, style]}>
       <Text style={[styles.pillText, { color }, spaced && { letterSpacing: 1.1 }]}>{label}</Text>
+    </View>
+  );
+}
+
+// The star counter chip — a warm amber surface with its own glow, used in
+// every game header.
+export function StarChip({ count = 0, style }) {
+  return (
+    <View style={[llElevation.tinted(ll.amber, { opacity: 0.28, radius: 20, height: 10, elevation: 4 }), { borderRadius: llRadius.pill }, style]}>
+      <View style={[llElevation.contact, { borderRadius: llRadius.pill }]}>
+        <LinearGradient
+          colors={llSurface.whiteAmber}
+          style={[styles.starChip, llRing.light]}
+          accessibilityLabel={`${count} stars`}
+        >
+          <TopHighlight radius={llRadius.pill} />
+          <Image source={ICON.star} style={styles.starChipIcon} />
+          <Text style={styles.starChipText}>{count}</Text>
+        </LinearGradient>
+      </View>
     </View>
   );
 }
@@ -198,7 +278,7 @@ export function Track({ value = 0, height = 14, colors = [ll.amberWarm, ll.pink,
   const width = w.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
   const inner = height - 6;
   return (
-    <View style={{ height, borderRadius: 99, backgroundColor: bg, padding: 3, overflow: 'hidden' }}>
+    <View style={{ height, borderRadius: 99, backgroundColor: bg, padding: 3, overflow: 'hidden', borderTopWidth: 1, borderTopColor: 'rgba(48,30,104,0.07)' }}>
       <Animated.View style={{ width, height: inner }}>
         <LinearGradient
           colors={colors}
@@ -234,8 +314,11 @@ export function Dots({ count = 3, index = 0, active = ll.pink }) {
 // A character speaking. The tail sits on whichever side the face is.
 export function SpeechRow({ face, children, tone = ll.blueTint, textColor = ll.blueInk, faceSize = 62, float = true }) {
   const bubble = (
-    <View style={[styles.bubble, { backgroundColor: tone }]}>
-      <Text style={[styles.bubbleText, { color: textColor }]}>{children}</Text>
+    <View style={[llElevation.cast, { flex: 1, borderRadius: 20, borderBottomLeftRadius: 6 }]}>
+      <View style={[styles.bubble, { backgroundColor: tone }, llRing.light]}>
+        <TopHighlight radius={20} />
+        <Text style={[styles.bubbleText, { color: textColor }]}>{children}</Text>
+      </View>
     </View>
   );
   return (
@@ -298,19 +381,32 @@ const styles = StyleSheet.create({
   textBtnLabel: { fontFamily: 'Nunito_800ExtraBold', fontSize: 14, color: ll.muted },
 
   iconBtn: {
-    borderRadius: 16, backgroundColor: ll.white, alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#6054BE', shadowOpacity: 0.14, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 3,
+    borderRadius: 16, alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
   },
 
-  pill: { alignSelf: 'flex-start', paddingVertical: 7, paddingHorizontal: 13, borderRadius: 99 },
+  pill: { alignSelf: 'flex-start', paddingVertical: 8, paddingHorizontal: 14, borderRadius: 99, overflow: 'hidden' },
+  pillLift: {
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.7)',
+    shadowColor: '#6054BE', shadowOpacity: 0.1, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 2,
+  },
   pillText: { fontFamily: 'Nunito_800ExtraBold', fontSize: 11 },
+
+  starChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 7, overflow: 'hidden',
+    borderRadius: llRadius.pill, paddingHorizontal: 16, paddingVertical: 9,
+  },
+  starChipIcon: { width: 24, height: 24, borderRadius: 8 },
+  starChipText: { fontFamily: 'Baloo2_800ExtraBold', fontSize: 15, color: ll.amberInk },
 
   dots: { flexDirection: 'row', justifyContent: 'center', gap: 7, paddingVertical: 4 },
   dot: { height: 8, borderRadius: 99 },
 
   speechRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 12 },
   speechFace: { flexShrink: 0 },
-  bubble: { flex: 1, borderRadius: 20, borderBottomLeftRadius: 6, paddingVertical: 12, paddingHorizontal: 14 },
+  bubble: {
+    flex: 1, borderRadius: 20, borderBottomLeftRadius: 6, paddingVertical: 13,
+    paddingHorizontal: 15, overflow: 'hidden',
+  },
   bubbleText: { fontFamily: 'Nunito_700Bold', fontSize: 13.5, lineHeight: 19.5 },
 
   hearts: { flexDirection: 'row', gap: 3, alignItems: 'center' },
