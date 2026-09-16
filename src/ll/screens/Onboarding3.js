@@ -5,14 +5,20 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FACE, POSE, WORLD_ART } from '../art';
 import { Dots, Floating, LLButton } from '../kit';
-import { ll, llGradients, llRadius, llShadow, llType } from '../tokens';
+import { TopHighlight } from '../premium';
+import { ll, llGradients, llRadius, llSurface, llType, withAlpha } from '../tokens';
 
 // Onboarding 3 — "What should we play first?".
 //
-// Multi-select, and deliberately consequence-free: nothing here gates content,
-// it only orders the home screen. Birdie's line changes with the count so the
-// screen responds to the child rather than sitting inert.
-
+// Multi-select, and deliberately consequence-free: nothing here gates
+// content, it only orders the home screen. Birdie's line changes with the
+// count so the screen responds to the child rather than sitting inert.
+//
+// The premium pass strengthens the one thing this screen is entirely about:
+// the selected state. A picked tile lifts, gains a ring in its own colour
+// and casts a shadow to match, and its checkmark sits in a filled disc with
+// a white rim. At this age a tick that only shifts colour slightly is not a
+// reliable signal of "I chose this".
 const INTERESTS = [
   { id: 'numbers', name: 'Numbers', sub: 'Count & add', img: WORLD_ART.numbers, soft: '#E8F0FF', dot: ll.blue },
   { id: 'letters', name: 'Letters', sub: 'Sounds & words', img: WORLD_ART.library, soft: '#FFEBF3', dot: ll.pink },
@@ -49,7 +55,9 @@ export default function Onboarding3({ navigation }) {
       >
         <View style={styles.head}>
           <Floating duration={4000} distance={5} rotate={1}>
-            <Image source={FACE.miaExcited} style={styles.headFace} accessibilityLabel="Mia" />
+            <View style={styles.headFaceCast}>
+              <Image source={FACE.miaExcited} style={styles.headFace} accessibilityLabel="Mia" />
+            </View>
           </Floating>
           <View style={styles.headText}>
             <Text style={styles.title}>What should we play first?</Text>
@@ -68,29 +76,39 @@ export default function Onboarding3({ navigation }) {
                 accessibilityState={{ checked: on }}
                 accessibilityLabel={`${it.name}, ${it.sub}`}
                 style={({ pressed }) => [
-                  styles.tile,
-                  on ? llShadow.card : llShadow.soft,
-                  on && { transform: [{ scale: 1.015 }] },
-                  pressed && { transform: [{ scale: 0.985 }] },
+                  styles.tileCast,
+                  on && { shadowColor: it.dot, shadowOpacity: 0.4, shadowRadius: 22, elevation: 9 },
+                  on && { transform: [{ translateY: -3 }] },
+                  pressed && { transform: [{ scale: 0.985 }, { translateY: 1 }] },
                 ]}
               >
-                <View style={[styles.tileArt, { backgroundColor: it.soft }]}>
-                  <Image source={it.img} style={styles.tileImg} />
-                  <View style={[styles.mark, { backgroundColor: on ? it.dot : 'rgba(255,255,255,0.85)' }]}>
-                    <Text style={[styles.markText, { color: on ? ll.white : ll.muted }]}>{on ? '✓' : '+'}</Text>
+                <LinearGradient
+                  colors={llSurface.white}
+                  style={[styles.tile, on && { borderColor: it.dot, borderWidth: 3 }]}
+                >
+                  <View style={[styles.tileArt, { backgroundColor: it.soft }]}>
+                    <Image source={it.img} style={styles.tileImg} />
+                    <View style={[styles.mark, { backgroundColor: on ? it.dot : 'rgba(255,255,255,0.9)' }, on && styles.markOn]}>
+                      <Text style={[styles.markText, { color: on ? ll.white : ll.muted }]}>{on ? '✓' : '+'}</Text>
+                    </View>
                   </View>
-                </View>
-                <View style={styles.tileBody}>
-                  <Text style={styles.tileName}>{it.name}</Text>
-                  <Text style={styles.tileSub}>{it.sub}</Text>
-                </View>
+                  <View style={styles.tileBody}>
+                    <TopHighlight radius={0} />
+                    <Text style={styles.tileName}>{it.name}</Text>
+                    <Text style={styles.tileSub}>{it.sub}</Text>
+                  </View>
+                </LinearGradient>
               </Pressable>
             );
           })}
 
-          <View style={[styles.tile, styles.moreTile, llShadow.soft]}>
-            <Text style={styles.moreTitle}>More later</Text>
-            <Text style={styles.moreSub}>New worlds unlock as you grow</Text>
+          {/* Dashed, so "more later" reads as a placeholder rather than a
+              card that failed to load. */}
+          <View style={[styles.tileCast, styles.moreCast]}>
+            <View style={[styles.tile, styles.moreTile]}>
+              <Text style={styles.moreTitle}>More later</Text>
+              <Text style={styles.moreSub}>New worlds unlock as you grow</Text>
+            </View>
           </View>
         </View>
 
@@ -112,14 +130,25 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: 24, gap: 16 },
 
   head: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  headFaceCast: {
+    borderRadius: 28,
+    shadowColor: '#5442A8', shadowOpacity: 0.24, shadowRadius: 14,
+    shadowOffset: { width: 0, height: 7 }, elevation: 5,
+  },
   headFace: { width: 56, height: 56, borderRadius: 28 },
   headText: { flex: 1 },
-  title: { ...llType.h3, color: ll.ink },
+  title: { ...llType.h3, color: ll.ink, letterSpacing: -0.3 },
   sub: { fontFamily: 'Nunito_700Bold', fontSize: 12.5, color: ll.body, marginTop: 2 },
 
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 13 },
+  tileCast: {
+    width: '47.5%', borderRadius: llRadius.xl,
+    shadowColor: '#6054BE', shadowOpacity: 0.16, shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 }, elevation: 4,
+  },
   tile: {
-    width: '47.5%', borderRadius: llRadius.xl, overflow: 'hidden', backgroundColor: ll.white,
+    borderRadius: llRadius.xl, overflow: 'hidden', backgroundColor: ll.white,
+    borderWidth: 1, borderColor: withAlpha('#7E6EC8', 0.1),
   },
   tileArt: { height: 96 },
   tileImg: { width: '100%', height: '100%' },
@@ -128,18 +157,26 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     shadowColor: '#3C2878', shadowOpacity: 0.22, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 3,
   },
+  markOn: { borderWidth: 2, borderColor: 'rgba(255,255,255,0.95)', shadowOpacity: 0.4 },
   markText: { fontFamily: 'Nunito_800ExtraBold', fontSize: 14, includeFontPadding: false },
   tileBody: { paddingHorizontal: 13, paddingTop: 11, paddingBottom: 14 },
   tileName: { fontFamily: 'Baloo2_800ExtraBold', fontSize: 16, color: ll.ink },
   tileSub: { fontFamily: 'Nunito_700Bold', fontSize: 11, color: ll.body },
 
-  moreTile: { justifyContent: 'center', padding: 14, gap: 4 },
+  moreCast: { shadowOpacity: 0.08 },
+  moreTile: {
+    justifyContent: 'center', padding: 14, gap: 4, minHeight: 140,
+    borderStyle: 'dashed', borderWidth: 2, borderColor: withAlpha('#8B86B8', 0.35),
+  },
   moreTitle: { fontFamily: 'Baloo2_800ExtraBold', fontSize: 14, color: ll.ink },
   moreSub: { fontFamily: 'Nunito_700Bold', fontSize: 11, lineHeight: 15, color: ll.body },
 
   birdieBar: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     backgroundColor: ll.amberSoft, borderRadius: llRadius.lg, paddingVertical: 13, paddingHorizontal: 15,
+    borderWidth: 1, borderColor: withAlpha(ll.amber, 0.45),
+    shadowColor: ll.amber, shadowOpacity: 0.24, shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 }, elevation: 4,
   },
   birdieFace: { width: 44, height: 44, borderRadius: 22, flexShrink: 0 },
   birdieText: { flex: 1, fontFamily: 'Nunito_700Bold', fontSize: 12.5, lineHeight: 17.5, color: ll.amberInk },
