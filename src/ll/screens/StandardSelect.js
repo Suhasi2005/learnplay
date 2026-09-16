@@ -2,12 +2,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FACE, ICON } from '../art';
 import { Floating, IconButton, Pill, Pop, SpeechRow, Track } from '../kit';
+import { TopHighlight } from '../premium';
 import { STANDARDS, SUBJECTS, countsFor, topicsFor } from '../syllabus';
-import { ll, llGradients, llRadius, llShadow, llType } from '../tokens';
+import { ll, llGradients, llRadius, llType, withAlpha } from '../tokens';
 import { loadProgress } from '../../storage';
 
 // Choose a standard.
@@ -16,9 +17,15 @@ import { loadProgress } from '../../storage';
 // topics, the games themselves — is a slice of the standard picked here. So
 // it gets a full screen rather than a dropdown, and each standard is
 // presented as a place with a host, a colour and real numbers attached.
-
+//
+// The premium pass treats each card as a doorway rather than a list row: the
+// world art bleeds to the card edge behind a diagonal wash, the host stands
+// proud of the artwork with a soft shadow under them, and a coloured spine
+// runs down the left edge so the three standards are distinguishable at a
+// glance while scrolling.
 export default function StandardSelect({ navigation }) {
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   const [starsByStandard, setStarsByStandard] = useState({});
 
   useFocusEffect(
@@ -38,6 +45,8 @@ export default function StandardSelect({ navigation }) {
       return () => { cancelled = true; };
     }, []),
   );
+
+  const compact = width < 360;
 
   return (
     <LinearGradient colors={llGradients.onb3} locations={[0, 0.5, 1]} style={styles.fill}>
@@ -68,61 +77,72 @@ export default function StandardSelect({ navigation }) {
 
             return (
               <Pop key={s.id} delay={i * 110}>
-                <Pressable
-                  onPress={() => navigation.navigate('LLSubjects', { standardId: s.id })}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${s.name}, ${s.tag}. ${counts.playable} games ready of ${counts.total} topics.`}
-                  style={({ pressed }) => [
-                    styles.card,
-                    { borderColor: s.tint },
-                    pressed && styles.cardPressed,
-                  ]}
-                >
-                  {/* World art sets the mood; a wash keeps the text readable
-                      whatever the illustration does underneath. */}
-                  <Image source={s.world} style={styles.cardArt} />
-                  <LinearGradient
-                    colors={['rgba(255,255,255,0.97)', 'rgba(255,255,255,0.86)', 'rgba(255,255,255,0.42)']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0.6 }}
-                    style={StyleSheet.absoluteFill}
-                  />
+                <View style={[styles.cardCast, { shadowColor: s.deep }]}>
+                  <Pressable
+                    onPress={() => navigation.navigate('LLSubjects', { standardId: s.id })}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${s.name}, ${s.tag}. ${counts.playable} games ready of ${counts.total} topics.`}
+                    style={({ pressed }) => [
+                      styles.card,
+                      { borderColor: s.tint },
+                      pressed && styles.cardPressed,
+                    ]}
+                  >
+                    {/* World art sets the mood; a wash keeps the text readable
+                        whatever the illustration does underneath. */}
+                    <Image source={s.world} style={styles.cardArt} />
+                    <LinearGradient
+                      colors={['rgba(255,255,255,0.97)', 'rgba(255,255,255,0.86)', 'rgba(255,255,255,0.42)']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0.6 }}
+                      style={StyleSheet.absoluteFill}
+                    />
+                    <TopHighlight radius={llRadius.xxl} />
+                    {/* Coloured spine — tells the three apart mid-scroll. */}
+                    <LinearGradient
+                      colors={[s.tint, s.deep]}
+                      style={styles.spine}
+                      pointerEvents="none"
+                    />
 
-                  <View style={styles.cardRow}>
-                    <View style={styles.cardBody}>
-                      <Pill label={s.tag} bg={s.soft} color={s.deep} />
-                      <Text style={styles.cardName}>{s.name}</Text>
-                      <Text style={styles.cardBlurb}>{s.blurb}</Text>
+                    <View style={[styles.cardRow, compact && { padding: 13 }]}>
+                      <View style={styles.cardBody}>
+                        <Pill label={s.tag} bg={s.soft} color={s.deep} />
+                        <Text style={styles.cardName}>{s.name}</Text>
+                        <Text style={styles.cardBlurb}>{s.blurb}</Text>
 
-                      <View style={styles.metaRow}>
-                        <View style={styles.metaChip}>
-                          <Image source={ICON.star} style={styles.metaIcon} />
-                          <Text style={styles.metaText}>{stats.stars}</Text>
-                        </View>
-                        <Text style={styles.metaSep}>
-                          {counts.playable} ready · {counts.total} topics
-                        </Text>
-                      </View>
-
-                      {stats.playable > 0 && (
-                        <View style={styles.trackWrap}>
-                          <Track
-                            value={ratio}
-                            height={12}
-                            colors={[s.tint, s.deep]}
-                          />
-                          <Text style={styles.trackLabel}>
-                            {stats.done} of {stats.playable} finished
+                        <View style={styles.metaRow}>
+                          <View style={styles.metaChip}>
+                            <Image source={ICON.star} style={styles.metaIcon} />
+                            <Text style={styles.metaText}>{stats.stars}</Text>
+                          </View>
+                          <Text style={styles.metaSep}>
+                            {counts.playable} ready · {counts.total} topics
                           </Text>
                         </View>
-                      )}
-                    </View>
 
-                    <Floating duration={4200 + i * 300} distance={7} style={styles.cardHost}>
-                      <Image source={s.pose} style={styles.cardHostImg} accessibilityLabel={s.host} />
-                    </Floating>
-                  </View>
-                </Pressable>
+                        {stats.playable > 0 && (
+                          <View style={styles.trackWrap}>
+                            <Track
+                              value={ratio}
+                              height={12}
+                              colors={[s.tint, s.deep]}
+                            />
+                            <Text style={styles.trackLabel}>
+                              {stats.done} of {stats.playable} finished
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+
+                      <Floating duration={4200 + i * 300} distance={7} style={styles.cardHost}>
+                        <View style={styles.cardHostCast}>
+                          <Image source={s.pose} style={[styles.cardHostImg, compact && { width: 72, height: 72 }]} accessibilityLabel={s.host} />
+                        </View>
+                      </Floating>
+                    </View>
+                  </Pressable>
+                </View>
               </Pop>
             );
           })}
@@ -137,21 +157,25 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: 20, gap: 14 },
   topBar: { flexDirection: 'row', alignItems: 'center' },
 
-  title: { ...llType.h2, color: ll.ink },
+  title: { ...llType.h2, color: ll.ink, letterSpacing: -0.3 },
   body: { ...llType.body, color: ll.soft },
 
   list: { gap: 14, marginTop: 4 },
+  cardCast: {
+    borderRadius: llRadius.xxl,
+    shadowOpacity: 0.2, shadowRadius: 26, shadowOffset: { width: 0, height: 14 }, elevation: 8,
+  },
   card: {
     borderRadius: llRadius.xxl,
     overflow: 'hidden',
     backgroundColor: ll.white,
     borderWidth: 2,
-    ...llShadow.card,
   },
-  cardPressed: { transform: [{ scale: 0.985 }] },
+  cardPressed: { transform: [{ scale: 0.985 }, { translateY: 2 }] },
   cardArt: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
+  spine: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 6 },
 
-  cardRow: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 10 },
+  cardRow: { flexDirection: 'row', alignItems: 'center', padding: 16, paddingLeft: 20, gap: 10 },
   cardBody: { flex: 1, gap: 6 },
   cardName: { ...llType.h3, color: ll.ink },
   cardBlurb: { fontFamily: 'Nunito_700Bold', fontSize: 12.5, lineHeight: 17, color: ll.body },
@@ -160,6 +184,7 @@ const styles = StyleSheet.create({
   metaChip: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     backgroundColor: ll.amberSoft, borderRadius: 99, paddingVertical: 3, paddingHorizontal: 8,
+    borderWidth: 1, borderColor: withAlpha(ll.amber, 0.5),
   },
   metaIcon: { width: 16, height: 16, borderRadius: 5 },
   metaText: { fontFamily: 'Nunito_800ExtraBold', fontSize: 11.5, color: ll.amberInk },
@@ -169,5 +194,10 @@ const styles = StyleSheet.create({
   trackLabel: { fontFamily: 'Nunito_700Bold', fontSize: 10.5, color: ll.muted },
 
   cardHost: { flexShrink: 0 },
+  cardHostCast: {
+    borderRadius: 26,
+    shadowColor: '#5442A8', shadowOpacity: 0.28, shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 }, elevation: 6,
+  },
   cardHostImg: { width: 84, height: 84, borderRadius: 26 },
 });
